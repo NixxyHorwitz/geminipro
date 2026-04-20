@@ -74,16 +74,16 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 <section class="hero">
   <div class="hero__eyebrow fade-up">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-    Reseller Resmi Â· Bergaransi
+    Reseller Resmi · Bergaransi
   </div>
   <h1 class="hero__title fade-up fade-up--1">
     Akses Penuh <span>Google AI Pro</span><br>untuk Kreativitas Tanpa Batas
   </h1>
   <p class="hero__subtitle fade-up fade-up--2">
-    Gemini 3.1 Pro Â· Deep Research Â· Veo 3.1 Â· 5 TB Storage Â· 1.000 AI Credits/bulan dan masih banyak lagi â€” semua dalam satu paket.
+    Gemini 3.1 Pro · Deep Research · Veo 3.1 · 5 TB Storage · 1.000 AI Credits/bulan dan masih banyak lagi — semua dalam satu paket.
   </p>
   <div class="fade-up fade-up--3" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a href="#pricing" class="btn btn--primary btn--lg" id="hero-cta">Mulai Sekarang â€” <?= $priceStr ?></a>
+    <a href="#pricing" class="btn btn--primary btn--lg" id="hero-cta">Mulai Sekarang — <?= $priceStr ?></a>
     <a href="#features" class="btn btn--ghost btn--lg">Lihat Semua Fitur</a>
   </div>
 </section>
@@ -130,14 +130,14 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     $features = [
       [$svgGemini,   'Gemini 3.1 Pro',      'Model AI paling canggih dari Google. Deep Research, percakapan multi-modal, dan analisis mendalam.','#e8f0fe','#1a73e8'],
       [$svgVideo,    'Veo 3.1 Video AI',    'Buat video sinematik berkualitas tinggi dari teks atau gambar dengan teknologi generasi terbaru.','#fce8e6','#ea4335'],
-      [$svgImage,    'Image Generation',    'Nano Banana Pro â€” buat gambar fotorealistis dan artwork dalam hitungan detik.','#e6f4ea','#34a853'],
+      [$svgImage,    'Image Generation',    'Nano Banana Pro — buat gambar fotorealistis dan artwork dalam hitungan detik.','#e6f4ea','#34a853'],
       [$svgResearch, 'Deep Research',       'Riset mendalam otomatis dengan sumber valid. Hemat berjam-jam pekerjaan riset manual.','#fff8e1','#f29900'],
       [$svgCloud,    '5 TB Storage',        'Penyimpanan total untuk Google Foto, Drive, dan Gmail. Tidak perlu khawatir kehabisan.','#fce8e6','#ea4335'],
       [$svgCredits,  '1.000 AI Credits/bln','Kredit AI untuk akses lebih tinggi ke semua fitur premium Google AI.','#e8f0fe','#1a73e8'],
       [$svgNotebook, 'NotebookLM Plus',     'Partner riset cerdas dengan Ringkasan Audio & Video, Kuis, dan analisis dokumen.','#e6f4ea','#34a853'],
       [$svgMail,     'Gemini di Gmail',     'Drafting email cerdas, ringkasan thread panjang, dan balasan otomatis langsung di Gmail.','#fff8e1','#f29900'],
       [$svgMusic,    'Producer.ai',         'Platform pembuatan musik kolaboratif berbasis AI. Compose, produce, dan publish.','#fce8e6','#ea4335'],
-      [$svgCode,     'Google Antigravity',  'Batas tarif lebih tinggi untuk model agen agentic â€” sempurna untuk developer.','#e8f0fe','#1a73e8'],
+      [$svgCode,     'Google Antigravity',  'Batas tarif lebih tinggi untuk model agen agentic — sempurna untuk developer.','#e8f0fe','#1a73e8'],
       [$svgCode,     'Developer Program',   'Batas lebih tinggi untuk Gemini CLI, Code Assist, Jules, dan kredit Cloud.','#e6f4ea','#34a853'],
       [$svgAndroid,  'Android Studio AI',   'Optimalkan pengembangan Android dengan Gemini terbaik langsung di IDE Anda.','#fff8e1','#f29900'],
     ];
@@ -167,7 +167,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
       </div>
       <div class="pricing-card__promo">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
-        Paket 12 bulan â€” hemat vs beli sendiri
+        Paket 12 bulan — hemat vs beli sendiri
       </div>
     </div>
     <div class="pricing-card__body">
@@ -177,19 +177,19 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
         </a>
       </div>
       <ul class="feature-list">
-        <li><strong>Gemini App</strong> â€” Akses lebih tinggi ke Gemini 3.1 Pro + Deep Research</li>
-        <li><strong>Veo 3.1</strong> â€” Pembuatan video AI sinematik (teks â†’ video)</li>
-        <li><strong>Whisk</strong> â€” Video dari gambar dengan Veo 3</li>
-        <li><strong>Nano Banana Pro</strong> â€” Image generation premium</li>
+        <li><strong>Gemini App</strong> — Akses lebih tinggi ke Gemini 3.1 Pro + Deep Research</li>
+        <li><strong>Veo 3.1</strong> — Pembuatan video AI sinematik (teks → video)</li>
+        <li><strong>Whisk</strong> — Video dari gambar dengan Veo 3</li>
+        <li><strong>Nano Banana Pro</strong> — Image generation premium</li>
         <li><strong>1.000 AI Credits</strong> per bulan</li>
-        <li><strong>NotebookLM Plus</strong> â€” Riset dengan ringkasan audio & video</li>
-        <li><strong>Gemini di Gmail, Docs, Vids</strong> â€” AI langsung di Google Workspace</li>
-        <li><strong>Google Penelusuran</strong> â€” Didukung Gemini 3 Pro</li>
-        <li><strong>Producer.ai</strong> â€” Platform musik kolaboratif berbasis AI</li>
-        <li><strong>Google Antigravity</strong> â€” Batas lebih tinggi untuk model agentic</li>
-        <li><strong>Developer Program Premium</strong> â€” Gemini CLI, Jules, Cloud credits</li>
+        <li><strong>NotebookLM Plus</strong> — Riset dengan ringkasan audio & video</li>
+        <li><strong>Gemini di Gmail, Docs, Vids</strong> — AI langsung di Google Workspace</li>
+        <li><strong>Google Penelusuran</strong> — Didukung Gemini 3 Pro</li>
+        <li><strong>Producer.ai</strong> — Platform musik kolaboratif berbasis AI</li>
+        <li><strong>Google Antigravity</strong> — Batas lebih tinggi untuk model agentic</li>
+        <li><strong>Developer Program Premium</strong> — Gemini CLI, Jules, Cloud credits</li>
         <li><strong>Gemini di Android Studio</strong></li>
-        <li><strong>5 TB Storage</strong> â€” Foto, Drive, Gmail</li>
+        <li><strong>5 TB Storage</strong> — Foto, Drive, Gmail</li>
       </ul>
     </div>
   </div>
@@ -228,7 +228,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   $faqs = [
     ['Apakah ini resmi dari Google?', 'Ini adalah layanan reseller berlisensi. Setelah pembayaran dikonfirmasi, Anda akan mendapat link aktivasi Google AI Pro asli.'],
     ['Berapa lama proses aktivasi?', 'Biasanya dalam 1-5 menit setelah pembayaran dikonfirmasi admin kami.'],
-    ['Metode pembayaran apa yang diterima?', 'Saat ini hanya QRIS â€” bisa dibayar lewat GoPay, OVO, Dana, QRIS BCA, Shopeepay, dan semua dompet digital yang mendukung QRIS.'],
+    ['Metode pembayaran apa yang diterima?', 'Saat ini hanya QRIS — bisa dibayar lewat GoPay, OVO, Dana, QRIS BCA, Shopeepay, dan semua dompet digital yang mendukung QRIS.'],
     ['Apakah ada garansi?', 'Ya, jika ada masalah dengan aktivasi dalam 7 hari pertama, kami akan refund penuh.'],
     ['Apa yang dimaksud metode SSO vs Link Aktivasi?', 'SSO: Anda login dengan akun Google Anda. Link Aktivasi: Admin mengirimi Anda link invite ke email tujuan.'],
   ];
@@ -247,7 +247,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 <!-- FOOTER -->
 <footer class="footer">
   <p>Â© <?= date('Y') ?> Google AI Pro Reseller. Bukan afiliasi resmi Google LLC.</p>
-  <p style="margin-top:6px"><a href="#">Syarat & Ketentuan</a> Â· <a href="#">Kebijakan Privasi</a> Â</p>
+  <p style="margin-top:6px"><a href="#">Syarat & Ketentuan</a> · <a href="#">Kebijakan Privasi</a> Â</p>
 </footer>
 
 <script>
@@ -268,7 +268,7 @@ document.querySelectorAll('.feature-card,.fade-up').forEach(el => observer.obser
 // details toggle icon
 document.querySelectorAll('details').forEach(d => {
   d.addEventListener('toggle', () => {
-    d.querySelector('span').textContent = d.open ? 'âˆ’' : '+';
+    d.querySelector('span').textContent = d.open ? '−' : '+';
   });
 });
 </script>

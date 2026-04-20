@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Send test message
                 $bot->sendMessage((int) $chatId,
-                    "âœ… <b>Webhook berhasil terhubung!</b>\n\nBot admin Google AI Pro siap digunakan.\nKetik /start untuk memulai.");
+                    "✅ <b>Webhook berhasil terhubung!</b>\n\nBot admin Google AI Pro siap digunakan.\Ketik /start untuk memulai.");
 
                 header('Location: setup.php?step=3'); exit;
             }
@@ -197,7 +197,7 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
       $cls = $n < $step ? 'done' : ($n === $step ? 'active' : '');
     ?>
     <div class="setup-step <?= $cls ?>">
-      <div class="setup-step__num"><?= $n < $step ? 'âœ“' : $n ?></div>
+      <div class="setup-step__num"><?= $n < $step ? '✓' : $n ?></div>
       <span class="setup-step__label"><?= $label ?></span>
     </div>
     <?php endforeach; ?>
@@ -205,7 +205,7 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
   <?php endif; ?>
 
   <?php foreach ($errors as $e): ?>
-  <div style="padding:0 40px;"><div class="alert alert--error">âš  <?= htmlspecialchars($e) ?></div></div>
+  <div style="padding:0 40px;"><div class="alert alert--error">⚠️ <?= htmlspecialchars($e) ?></div></div>
   <?php endforeach; ?>
 
   <!-- ===== STEP 1: DATABASE ===== -->
@@ -249,7 +249,7 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
       Test Koneksi
     </button>
-    <button type="submit" form="form-step1" class="btn btn--primary">Lanjut â†’</button>
+    <button type="submit" form="form-step1" class="btn btn--primary">Lanjut →</button>
   </div>
 
   <!-- ===== STEP 2: TELEGRAM ===== -->
@@ -276,7 +276,7 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
       </div>
       <div id="tg-preview" style="display:none">
         <div class="tg-preview">
-          <div class="tg-preview__avatar">ðŸ¤–</div>
+          <div class="tg-preview__avatar">🤖</div>
           <div class="tg-preview__info">
             <div class="tg-preview__name" id="tg-name">-</div>
             <div class="tg-preview__id" id="tg-username">-</div>
@@ -290,7 +290,7 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12l-5 2.5V14H7V8h6v2.5L18 8v6z"/></svg>
       Test Bot
     </button>
-    <button type="submit" form="form-step2" class="btn btn--primary">Lanjut â†’</button>
+    <button type="submit" form="form-step2" class="btn btn--primary">Lanjut →</button>
   </div>
 
   <!-- ===== STEP 3: PRODUCT ===== -->
@@ -307,7 +307,7 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
       </div>
       <div class="divider">Google SSO (Opsional)</div>
       <div class="alert alert--info" style="margin-bottom:16px">
-        â„¹ï¸ Lewati bagian ini jika belum punya Google OAuth credentials. Bisa diisi nanti via Telegram.
+        ℹ️ Lewati bagian ini jika belum punya Google OAuth credentials. Bisa diisi nanti via Telegram.
       </div>
       <div class="form-group">
         <label class="form-label">Google Client ID</label>
@@ -320,8 +320,8 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
     </form>
   </div>
   <div class="setup-footer">
-    <a href="setup.php?step=2" class="btn btn--ghost">â† Kembali</a>
-    <button type="submit" form="form-step3" class="btn btn--primary">Selesai âœ“</button>
+    <a href="setup.php?step=2" class="btn btn--ghost">← Kembali</a>
+    <button type="submit" form="form-step3" class="btn btn--primary">Selesai ✓</button>
   </div>
 
   <!-- ===== DONE ===== -->
@@ -334,7 +334,7 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
     <div class="setup-success__sub">
       Semua konfigurasi telah tersimpan. Bot Telegram sudah aktif dan siap menerima perintah admin.
     </div>
-    <a href="/" class="btn btn--primary btn--lg">Lihat Website â†’</a>
+    <a href="/" class="btn btn--primary btn--lg">Lihat Website →</a>
   </div>
   <?php endif; ?>
 

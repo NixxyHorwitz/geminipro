@@ -56,6 +56,21 @@ if (isset($_POST['action']) && $_POST['action'] === 'gen_qris') {
 }
 
 // -----------------------------------------------------------------------
+// AJAX: check status endpoint
+// -----------------------------------------------------------------------
+if (isset($_GET['action']) && $_GET['action'] === 'check_status') {
+    header('Content-Type: application/json');
+    $code = trim($_GET['order'] ?? '');
+    $ord  = $code ? $order->findByCode($code) : null;
+    if ($ord) {
+        echo json_encode(['status' => $ord['status'], 'reason' => $ord['rejected_reason']]);
+    } else {
+        echo json_encode(['status' => 'not_found']);
+    }
+    exit;
+}
+
+// -----------------------------------------------------------------------
 // POST Step 1: Create order
 // -----------------------------------------------------------------------
 $newOrder = null;
@@ -480,19 +495,5 @@ setInterval(() => window.location.reload(), 15000);
 <?php endif; ?>
 </script>
 
-<?php
-// AJAX: check status endpoint
-if (isset($_GET['action']) && $_GET['action'] === 'check_status') {
-    header('Content-Type: application/json');
-    $code = trim($_GET['order'] ?? '');
-    $ord  = $code ? $order->findByCode($code) : null;
-    if ($ord) {
-        echo json_encode(['status' => $ord['status'], 'reason' => $ord['rejected_reason']]);
-    } else {
-        echo json_encode(['status' => 'not_found']);
-    }
-    exit;
-}
-?>
 </body>
 </html>

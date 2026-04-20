@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
+use App\Config;
+$siteTitle   = Config::get('site_title', 'Google AI Pro');
+$favicon     = Config::get('favicon_file', '');
 
 use App\Config;
 use App\Database;

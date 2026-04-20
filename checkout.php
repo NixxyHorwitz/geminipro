@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
+use App\Config;
+
+$headerTitle = Config::get('product_name', 'Google AI Pro');
+$siteTitle   = Config::get('site_title', $headerTitle);
+$favicon     = Config::get('favicon_file', '');
 
 // Error logging — write to error_log file in project root for easy debugging
 ini_set('log_errors', '1');

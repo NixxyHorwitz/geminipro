@@ -1,8 +1,14 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
-
 use App\Config;
+
+$headerTitle = Config::get('product_name', 'Google AI Pro');
+$siteTitle   = Config::get('site_title', $headerTitle);
+$siteTagline = Config::get('site_tagline', 'Paket Lengkap 12 Bulan');
+$footerText  = Config::get('footer_text', 'Bukan afiliasi resmi Google LLC.');
+$favicon     = Config::get('favicon_file', '');
+
 use App\Logger;
 use App\TelegramBot;
 

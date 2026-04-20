@@ -8,7 +8,7 @@ use App\TelegramBot;
 
 // If already setup, redirect to home
 if (Config::isSetupComplete()) {
-    header('Location: /googlepro/'); exit;
+    header('Location: /'); exit;
 }
 
 $step   = (int) ($_GET['step'] ?? 1);
@@ -321,7 +321,7 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
     <div class="setup-success__sub">
       Semua konfigurasi telah tersimpan. Bot Telegram sudah aktif dan siap menerima perintah admin.
     </div>
-    <a href="/googlepro/" class="btn btn--primary btn--lg">Lihat Website →</a>
+    <a href="/" class="btn btn--primary btn--lg">Lihat Website →</a>
   </div>
   <?php endif; ?>
 

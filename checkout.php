@@ -9,7 +9,7 @@ use App\TelegramBot;
 use App\QrisHelper;
 
 if (!Config::isSetupComplete()) {
-    header('Location: /googlepro/setup.php'); exit;
+    header('Location: /setup.php'); exit;
 }
 
 $bot    = new TelegramBot(Config::get('telegram_bot_token', ''));
@@ -128,7 +128,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 
 <!-- Mini header -->
 <header class="header">
-  <a href="/googlepro/" class="header__logo">
+  <a href="/" class="header__logo">
     <svg viewBox="0 0 32 32" fill="none">
       <path d="M28 16.3C28 9.5 22.6 4 16 4C9.4 4 4 9.5 4 16C4 22.5 9.4 28 16 28H28V16.3Z" fill="#4285F4"/>
       <path d="M22 16H16V22H22V16Z" fill="white"/>
@@ -138,7 +138,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     Google AI Pro
   </a>
   <nav class="header__nav">
-    <a href="/googlepro/" class="btn btn--ghost btn--sm">← Kembali</a>
+    <a href="/" class="btn btn--ghost btn--sm">← Kembali</a>
   </nav>
 </header>
 
@@ -271,7 +271,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
           <div style="font-size:13px;color:var(--c-text-sec);margin-bottom:4px">Email tujuan aktivasi:</div>
           <div style="font-size:16px;font-weight:600"><?= htmlspecialchars($doneOrder['email']) ?></div>
         </div>
-        <a href="/googlepro/" class="btn btn--primary btn--lg">Kembali ke Beranda</a>
+        <a href="/" class="btn btn--primary btn--lg">Kembali ke Beranda</a>
       </div>
       <?php else: ?>
       <div class="payment-success">

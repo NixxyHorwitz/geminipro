@@ -8,7 +8,7 @@ use App\TelegramBot;
 
 // Redirect to setup if not configured
 if (!Config::isSetupComplete()) {
-    header('Location: /googlepro/setup.php'); exit;
+    header('Location: /setup.php'); exit;
 }
 
 // Log visit

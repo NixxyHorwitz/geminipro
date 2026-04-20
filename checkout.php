@@ -13,7 +13,6 @@ ini_set('error_log', __DIR__ . '/error_log.txt');
 // Keep display_errors OFF in production — log only
 ini_set('display_errors', '0');
 
-use App\Config;
 use App\Order;
 use App\Logger;
 use App\QrisHelper;

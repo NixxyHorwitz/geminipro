@@ -5,7 +5,6 @@ use App\Config;
 $siteTitle   = Config::get('site_title', 'Google AI Pro');
 $favicon     = Config::get('favicon_file', '');
 
-use App\Config;
 use App\Database;
 use App\TelegramBot;
 

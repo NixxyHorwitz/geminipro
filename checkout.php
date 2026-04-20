@@ -7,10 +7,10 @@ $headerTitle = Config::get('product_name', 'Google AI Pro');
 $siteTitle   = Config::get('site_title', $headerTitle);
 $favicon     = Config::get('favicon_file', '');
 
-// Error logging — write to error_log file in project root for easy debugging
+// Error logging â€” write to error_log file in project root for easy debugging
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/error_log.txt');
-// Keep display_errors OFF in production — log only
+// Keep display_errors OFF in production â€” log only
 ini_set('display_errors', '0');
 
 use App\Order;
@@ -22,7 +22,7 @@ if (!Config::isSetupComplete()) {
 }
 
 if (!$pdo) {
-    error_log('[checkout.php] FATAL: $pdo is null — DB connection failed');
+    error_log('[checkout.php] FATAL: $pdo is null â€” DB connection failed');
     http_response_code(500);
     die('<h1>Server Error</h1><p>Koneksi database bermasalah. Silakan coba beberapa saat lagi.</p>');
 }
@@ -69,7 +69,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'gen_qris') {
         $img         = QrisHelper::generateQrImage($dynamicQris, 280);
 
         if (!$img) {
-            error_log('[checkout.php][gen_qris] generateQrImage returned empty — external API failed');
+            error_log('[checkout.php][gen_qris] generateQrImage returned empty â€” external API failed');
             echo json_encode(['ok'=>false, 'msg'=>'Gagal generate QR. Coba refresh halaman.']); exit;
         }
 
@@ -159,7 +159,10 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Checkout — Google AI Pro</title>
+<title>Checkout — <?= htmlspecialchars($siteTitle) ?></title>
+<?php if ($favicon): ?>
+<link rel="icon" href="/assets/img/<?= htmlspecialchars($favicon) ?>?v=<?= time() ?>">
+<?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="stylesheet" href="assets/css/checkout.css">
@@ -178,7 +181,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     Google AI Pro
   </a>
   <nav class="header__nav">
-    <a href="/" class="btn btn--ghost btn--sm">← Kembali</a>
+    <a href="/" class="btn btn--ghost btn--sm">â† Kembali</a>
   </nav>
 </header>
 
@@ -198,7 +201,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     </div>
 
     <?php foreach ($errors as $e): ?>
-    <div class="alert alert--error">⚠ <?= htmlspecialchars($e) ?></div>
+    <div class="alert alert--error">âš  <?= htmlspecialchars($e) ?></div>
     <?php endforeach; ?>
 
     <!-- ===== STEP 1: Pilih metode ===== -->
@@ -213,12 +216,12 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 
         <div class="method-cards" id="method-cards">
           <div class="method-card" data-method="sso" onclick="selectMethod('sso',this)">
-            <div class="method-card__icon">🔐</div>
+            <div class="method-card__icon">ðŸ”</div>
             <div class="method-card__title">Login SSO</div>
             <div class="method-card__sub">Login dengan akun Google Anda langsung</div>
           </div>
           <div class="method-card" data-method="link" onclick="selectMethod('link',this)">
-            <div class="method-card__icon">📧</div>
+            <div class="method-card__icon">ðŸ“§</div>
             <div class="method-card__title">Link Aktivasi</div>
             <div class="method-card__sub">Terima link undangan di email Anda</div>
           </div>
@@ -232,7 +235,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
             <div class="form-hint" id="email-hint">Pastikan ini adalah akun Google yang aktif</div>
           </div>
           <button type="submit" class="btn btn--primary btn--full btn--lg" id="btn-next">
-            Lanjut ke Pembayaran →
+            Lanjut ke Pembayaran â†’
           </button>
         </div>
       </form>
@@ -248,7 +251,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 
       <!-- Timer -->
       <div class="timer-bar" id="timer-bar">
-        ⏱ Selesaikan pembayaran dalam:
+        â± Selesaikan pembayaran dalam:
         <span class="timer-bar__time" id="countdown">15:00</span>
       </div>
 
@@ -321,7 +324,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
         </div>
         <h2 style="margin-bottom:8px">Menunggu Konfirmasi</h2>
         <p style="color:var(--c-text-sec);margin-bottom:24px">
-          Pembayaran Anda sedang diverifikasi oleh admin. Proses biasanya 1–5 menit.
+          Pembayaran Anda sedang diverifikasi oleh admin. Proses biasanya 1â€“5 menit.
         </p>
         <?php if ($doneOrder): ?>
         <div style="background:var(--c-blue-light);border:1px solid #c6d9f8;border-radius:var(--radius-md);padding:20px;margin-bottom:24px">
@@ -346,7 +349,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     <div class="checkout-summary__title">Ringkasan Order</div>
 
     <div class="order-product">
-      <div class="order-product__icon">🤖</div>
+      <div class="order-product__icon">ðŸ¤–</div>
       <div>
         <div class="order-product__name">Google AI Pro</div>
         <div class="order-product__dur">Paket 12 Bulan</div>
@@ -472,7 +475,7 @@ async function loadQris() {
     frame.innerHTML = `<img src="${data.img}" alt="QRIS" width="220" height="220">`;
   } else {
     frame.innerHTML = `<div style="width:220px;height:220px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--c-red);text-align:center;padding:16px">
-      <span style="font-size:28px">⚠️</span>
+      <span style="font-size:28px">âš ï¸</span>
       <span style="font-size:12px">${data.msg || 'QRIS belum tersedia. Hubungi admin.'}</span>
     </div>`;
   }
@@ -485,7 +488,7 @@ function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast-container');
   if (!toast) return;
   toast.className = 'show toast-' + type;
-  toast.innerHTML = (type === 'error' ? '⚠️ ' : (type === 'success' ? '✅ ' : 'ℹ️ ')) + msg;
+  toast.innerHTML = (type === 'error' ? 'âš ï¸ ' : (type === 'success' ? 'âœ… ' : 'â„¹ï¸ ')) + msg;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.className = '', 3000);
 }
@@ -502,11 +505,11 @@ async function checkStatus() {
     } else if (data.status === 'rejected') {
       showToast('Pembayaran ditolak. Alasan: ' + (data.reason || 'Tidak ada keterangan'), 'error');
     } else {
-      if (btn) { btn.disabled = false; btn.textContent = '🔄 Cek Status Pembayaran'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'ðŸ”„ Cek Status Pembayaran'; }
       showToast('Pembayaran belum dikonfirmasi. Tunggu sebentar.', 'info');
     }
   } catch(e) {
-    if (btn) { btn.disabled = false; btn.textContent = '🔄 Cek Status Pembayaran'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'ðŸ”„ Cek Status Pembayaran'; }
   }
 }
 

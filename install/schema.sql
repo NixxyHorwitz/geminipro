@@ -124,4 +124,5 @@ INSERT IGNORE INTO `config` (`key`, `value`) VALUES
 ('smtp_user', ''),
 ('smtp_pass', ''),
 ('smtp_from', ''),
-('smtp_from_name', 'Google AI Pro');
+('smtp_from_name', 'Google AI Pro'),
+('smtp_secure', 'tls');

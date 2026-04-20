@@ -238,7 +238,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 <!-- FOOTER -->
 <footer class="footer">
   <p>© <?= date('Y') ?> Google AI Pro Reseller. Bukan afiliasi resmi Google LLC.</p>
-  <p style="margin-top:6px"><a href="#">Syarat & Ketentuan</a> · <a href="#">Kebijakan Privasi</a> · <a href="https://t.me/" target="_blank">Hubungi Admin</a></p>
+  <p style="margin-top:6px"><a href="#">Syarat & Ketentuan</a> · <a href="#">Kebijakan Privasi</a> �</p>
 </footer>
 
 <script>

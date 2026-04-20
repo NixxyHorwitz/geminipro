@@ -1,0 +1,30 @@
+# Google AI Pro — .gitignore
+
+# Environment & secrets
+.env
+*.env
+
+# Uploads (QRIS images - may contain sensitive data)
+uploads/*.jpg
+uploads/*.jpeg
+uploads/*.png
+uploads/*.gif
+uploads/qris_*
+uploads/preview_*
+
+# Do NOT ignore .gitkeep
+!uploads/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# PHP cache
+*.cache

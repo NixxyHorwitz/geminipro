@@ -407,6 +407,9 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 </div><!-- /checkout-layout -->
 </div>
 
+<!-- Toast element -->
+<div id="toast-container"></div>
+
 <script>
 // ------- Step 1: Method selector -------
 function selectMethod(method, el) {
@@ -476,6 +479,17 @@ async function loadQris() {
 }
 loadQris();
 
+// Toast notification
+let toastTimer;
+function showToast(msg, type = 'info') {
+  const toast = document.getElementById('toast-container');
+  if (!toast) return;
+  toast.className = 'show toast-' + type;
+  toast.innerHTML = (type === 'error' ? '⚠️ ' : (type === 'success' ? '✅ ' : 'ℹ️ ')) + msg;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.className = '', 3000);
+}
+
 // Check payment status
 async function checkStatus() {
   const btn = document.getElementById('btn-check');
@@ -486,15 +500,16 @@ async function checkStatus() {
     if (data.status === 'confirmed') {
       window.location.href = `checkout.php?step=done&order=${ORDER_CODE}`;
     } else if (data.status === 'rejected') {
-      alert('Pembayaran ditolak. Alasan: ' + (data.reason || 'Tidak ada keterangan'));
+      showToast('Pembayaran ditolak. Alasan: ' + (data.reason || 'Tidak ada keterangan'), 'error');
     } else {
       if (btn) { btn.disabled = false; btn.textContent = '🔄 Cek Status Pembayaran'; }
-      alert('Pembayaran belum dikonfirmasi. Mohon tunggu admin memverifikasi.');
+      showToast('Pembayaran belum dikonfirmasi. Tunggu sebentar.', 'info');
     }
   } catch(e) {
     if (btn) { btn.disabled = false; btn.textContent = '🔄 Cek Status Pembayaran'; }
   }
 }
+
 
 // Auto-check every 30s
 setInterval(() => {

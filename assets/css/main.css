@@ -408,3 +408,32 @@ p  { margin-bottom: 8px; }
   .hero__subtitle { font-size: 15px; }
   .trust-bar { flex-direction: column; gap: 10px; align-items: flex-start; padding: 16px; }
 }
+
+/* --- Toast Notification --- */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--c-surface);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+#toast-container.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+#toast-container.toast-error { background: var(--c-red); }
+#toast-container.toast-success { background: var(--c-green); }
+#toast-container.toast-info { background: var(--c-blue); }

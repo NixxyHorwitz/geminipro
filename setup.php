@@ -240,7 +240,10 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
     </form>
   </div>
   <div class="setup-footer">
-    <button type="button" class="btn btn--ghost" onclick="testDb()">🔌 Test Koneksi</button>
+    <button type="button" class="btn btn--ghost" onclick="testDb()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      Test Koneksi
+    </button>
     <button type="submit" form="form-step1" class="btn btn--primary">Lanjut →</button>
   </div>
 
@@ -278,7 +281,10 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
     </form>
   </div>
   <div class="setup-footer">
-    <button type="button" class="btn btn--ghost" onclick="testTelegram()">📨 Test Bot</button>
+    <button type="button" class="btn btn--ghost" onclick="testTelegram()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12l-5 2.5V14H7V8h6v2.5L18 8v6z"/></svg>
+      Test Bot
+    </button>
     <button type="submit" form="form-step2" class="btn btn--primary">Lanjut →</button>
   </div>
 
@@ -316,7 +322,9 @@ $stepLabels = ['Database', 'Telegram', 'Produk'];
   <!-- ===== DONE ===== -->
   <?php elseif ($step === 101 || isset($_GET['step']) && $_GET['step'] === 'done'): ?>
   <div class="setup-success">
-    <div class="setup-success__icon">🎉</div>
+    <div class="setup-success__icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
     <div class="setup-success__title">Setup Berhasil!</div>
     <div class="setup-success__sub">
       Semua konfigurasi telah tersimpan. Bot Telegram sudah aktif dan siap menerima perintah admin.

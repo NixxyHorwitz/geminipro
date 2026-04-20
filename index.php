@@ -64,7 +64,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 <!-- HERO -->
 <section class="hero">
   <div class="hero__eyebrow fade-up">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
     Reseller Resmi · Bergaransi
   </div>
   <h1 class="hero__title fade-up fade-up--1">
@@ -105,24 +105,37 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   <p class="subtitle">Satu langganan, akses ke seluruh ekosistem AI Google</p>
   <div class="features-grid">
     <?php
+    // SVG icons as Material Design paths
+    $svgGemini   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/><path stroke-linecap="round" stroke-linejoin="round" d="M18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>';
+    $svgVideo    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>';
+    $svgImage    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>';
+    $svgResearch = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>';
+    $svgCloud    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z"/></svg>';
+    $svgCredits  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+    $svgNotebook = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>';
+    $svgMail     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>';
+    $svgMusic    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/></svg>';
+    $svgCode     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>';
+    $svgAndroid  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>';
+
     $features = [
-      ['🤖','Gemini 3.1 Pro','Model AI paling canggih dari Google. Deep Research, percakapan multi-modal, dan analisis mendalam.','#e8f0fe'],
-      ['🎬','Veo 3.1 Video AI','Buat video sinematik berkualitas tinggi dari teks atau gambar dengan teknologi generasi terbaru.','#fce8e6'],
-      ['🎨','Image Generation','Nano Banana Pro — buat gambar fotorealistis dan artwork dalam hitungan detik.','#e6f4ea'],
-      ['🔬','Deep Research','Riset mendalam otomatis dengan sumber valid. Hemat berjam-jam pekerjaan riset manual.','#fff8e1'],
-      ['💾','5 TB Storage','Penyimpanan total untuk Google Foto, Drive, dan Gmail. Tidak perlu khawatir kehabisan.','#fce8e6'],
-      ['✨','1.000 AI Credits/bln','Kredit AI untuk akses lebih tinggi ke semua fitur premium Google AI.','#e8f0fe'],
-      ['📓','NotebookLM Plus','Partner riset cerdas dengan Ringkasan Audio & Video, Kuis, dan analisis dokumen.','#e6f4ea'],
-      ['📧','Gemini di Gmail','Drafting email cerdas, ringkasan thread panjang, dan balasan otomatis langsung di Gmail.','#fff8e1'],
-      ['🎵','Producer.ai','Platform pembuatan musik kolaboratif berbasis AI. Compose, produce, dan publish.','#fce8e6'],
-      ['💻','Google Antigravity','Batas tarif lebih tinggi untuk model agen agentic — sempurna untuk developer.','#e8f0fe'],
-      ['🤝','Developer Program','Batas lebih tinggi untuk Gemini CLI, Code Assist, Jules, dan kredit Cloud.','#e6f4ea'],
-      ['📱','Android Studio AI','Optimalkan pengembangan Android dengan Gemini terbaik langsung di IDE Anda.','#fff8e1'],
+      [$svgGemini,   'Gemini 3.1 Pro',      'Model AI paling canggih dari Google. Deep Research, percakapan multi-modal, dan analisis mendalam.','#e8f0fe','#1a73e8'],
+      [$svgVideo,    'Veo 3.1 Video AI',    'Buat video sinematik berkualitas tinggi dari teks atau gambar dengan teknologi generasi terbaru.','#fce8e6','#ea4335'],
+      [$svgImage,    'Image Generation',    'Nano Banana Pro — buat gambar fotorealistis dan artwork dalam hitungan detik.','#e6f4ea','#34a853'],
+      [$svgResearch, 'Deep Research',       'Riset mendalam otomatis dengan sumber valid. Hemat berjam-jam pekerjaan riset manual.','#fff8e1','#f29900'],
+      [$svgCloud,    '5 TB Storage',        'Penyimpanan total untuk Google Foto, Drive, dan Gmail. Tidak perlu khawatir kehabisan.','#fce8e6','#ea4335'],
+      [$svgCredits,  '1.000 AI Credits/bln','Kredit AI untuk akses lebih tinggi ke semua fitur premium Google AI.','#e8f0fe','#1a73e8'],
+      [$svgNotebook, 'NotebookLM Plus',     'Partner riset cerdas dengan Ringkasan Audio & Video, Kuis, dan analisis dokumen.','#e6f4ea','#34a853'],
+      [$svgMail,     'Gemini di Gmail',     'Drafting email cerdas, ringkasan thread panjang, dan balasan otomatis langsung di Gmail.','#fff8e1','#f29900'],
+      [$svgMusic,    'Producer.ai',         'Platform pembuatan musik kolaboratif berbasis AI. Compose, produce, dan publish.','#fce8e6','#ea4335'],
+      [$svgCode,     'Google Antigravity',  'Batas tarif lebih tinggi untuk model agen agentic — sempurna untuk developer.','#e8f0fe','#1a73e8'],
+      [$svgCode,     'Developer Program',   'Batas lebih tinggi untuk Gemini CLI, Code Assist, Jules, dan kredit Cloud.','#e6f4ea','#34a853'],
+      [$svgAndroid,  'Android Studio AI',   'Optimalkan pengembangan Android dengan Gemini terbaik langsung di IDE Anda.','#fff8e1','#f29900'],
     ];
-    foreach ($features as [$icon, $title, $desc, $bg]):
+    foreach ($features as [$icon, $title, $desc, $bg, $color]):
     ?>
     <div class="feature-card">
-      <div class="feature-card__icon" style="background:<?= $bg ?>">
+      <div class="feature-card__icon" style="background:<?= $bg ?>;color:<?= $color ?>">
         <?= $icon ?>
       </div>
       <div class="feature-card__title"><?= $title ?></div>
@@ -144,7 +157,8 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
         <div class="pricing-card__period">/bln</div>
       </div>
       <div class="pricing-card__promo">
-        🎁 Paket 12 bulan — hemat vs beli sendiri
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+        Paket 12 bulan — hemat vs beli sendiri
       </div>
     </div>
     <div class="pricing-card__body">

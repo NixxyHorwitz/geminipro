@@ -222,7 +222,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
         </div>
         <div class="qris-logo">
           <div class="qris-badge">QRIS</div>
-          Nasional · Semua E-Wallet
+          Nasional &middot; Semua E-Wallet
         </div>
         <div class="qris-amount" id="qris-amount"><?= $priceStr ?></div>
         <div class="qris-amount-label">Total yang harus dibayar</div>
@@ -230,14 +230,15 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 
       <ul class="payment-steps">
         <li><span class="step-num">1</span>Buka aplikasi e-wallet Anda (GoPay, OVO, DANA, dll)</li>
-        <li><span class="step-num">2</span>Pilih "Scan QR" atau "Pay"</li>
+        <li><span class="step-num">2</span>Pilih &ldquo;Scan QR&rdquo; atau &ldquo;Pay&rdquo;</li>
         <li><span class="step-num">3</span>Scan QR Code di atas</li>
         <li><span class="step-num">4</span>Pastikan nominal sesuai, lalu konfirmasi pembayaran</li>
-        <li><span class="step-num">5</span>Tunggu konfirmasi dari admin (biasanya 1–5 menit)</li>
+        <li><span class="step-num">5</span>Tunggu konfirmasi dari admin (biasanya 1&ndash;5 menit)</li>
       </ul>
 
       <div class="alert alert--warn">
-        ⚠ Jika sudah bayar namun belum dikonfirmasi dalam 15 menit, hubungi admin via Telegram dengan kode order Anda.
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;margin-top:1px"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        Jika sudah bayar namun belum dikonfirmasi dalam 15 menit, hubungi admin via Telegram dengan kode order Anda.
       </div>
 
       <div style="text-align:center;margin-top:12px">
@@ -249,10 +250,12 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 
       <div style="margin-top:24px;display:flex;gap:12px">
         <button onclick="checkStatus()" class="btn btn--outline btn--full" id="btn-check">
-          🔄 Cek Status Pembayaran
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          Cek Status
         </button>
         <a href="https://t.me/" target="_blank" class="btn btn--ghost btn--full">
-          📨 Hubungi Admin
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          Hubungi Admin
         </a>
       </div>
     </div>
@@ -262,7 +265,9 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     <div class="step-panel active" id="panel-3">
       <?php if ($doneOrder && $doneOrder['status'] === 'confirmed'): ?>
       <div class="payment-success">
-        <div class="payment-success__icon">✅</div>
+        <div class="payment-success__icon" style="background:var(--c-green-light)">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
         <h2 style="margin-bottom:8px">Pembayaran Dikonfirmasi!</h2>
         <p style="color:var(--c-text-sec);margin-bottom:24px">
           Terima kasih! Link aktivasi Google AI Pro telah dikirim ke email Anda.
@@ -275,7 +280,9 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
       </div>
       <?php else: ?>
       <div class="payment-success">
-        <div class="payment-success__icon">⏳</div>
+        <div class="payment-success__icon" style="background:#fff8e1">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f29900" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
         <h2 style="margin-bottom:8px">Menunggu Konfirmasi</h2>
         <p style="color:var(--c-text-sec);margin-bottom:24px">
           Pembayaran Anda sedang diverifikasi oleh admin. Proses biasanya 1–5 menit.
@@ -287,8 +294,8 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
         </div>
         <?php endif; ?>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <button onclick="checkStatus()" class="btn btn--primary">🔄 Refresh Status</button>
-          <a href="https://t.me/" class="btn btn--ghost" target="_blank">📨 Hubungi Admin</a>
+          <button onclick="checkStatus()" class="btn btn--primary">Refresh Status</button>
+          <a href="https://t.me/" class="btn btn--ghost" target="_blank">Hubungi Admin</a>
         </div>
       </div>
       <?php endif; ?>
@@ -343,17 +350,17 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
       </div>
       <div class="checkout-trust-item">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        Konfirmasi dalam 1-5 Menit
+        Konfirmasi 1&ndash;5 Menit
       </div>
       <div class="checkout-trust-item">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        Didukung Semua E-Wallet QRIS
+        Semua E-Wallet QRIS
       </div>
     </div>
 
     <!-- Accepted wallets -->
     <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--c-border)">
-      <div style="font-size:11px;color:var(--c-text-hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Diterima via QRIS</div>
+      <div style="font-size:11px;font-weight:600;color:var(--c-text-hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Diterima via QRIS</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--c-text-sec)">
         <?php foreach (['GoPay','OVO','DANA','ShopeePay','LinkAja','BCA','BRI','BNI','Mandiri','BSI'] as $w): ?>
         <span style="background:var(--c-bg-alt);border:1px solid var(--c-border);border-radius:4px;padding:3px 8px"><?= $w ?></span>

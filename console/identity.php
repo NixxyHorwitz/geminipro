@@ -41,24 +41,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $allowedMimes = ['image/png', 'image/jpeg', 'image/gif', 'image/x-icon', 'image/vnd.microsoft.icon', 'image/webp', 'image/svg+xml'];
             if (!in_array($mime, $allowedMimes)) {
                 $flash = 'Format tidak didukung. Gunakan PNG, ICO, JPG, SVG, atau WebP.'; $flashType = 'error';
-            } elseif ($file['size'] > 512 * 1024) {
-                $flash = 'Ukuran file terlalu besar. Maksimal 512KB.'; $flashType = 'error';
+            } elseif ($file['size'] > 5 * 1024 * 1024) {
+                $flash = 'Ukuran file terlalu besar. Maksimal 5MB.'; $flashType = 'error';
             } else {
-                // Save as PNG (or keep original extension)
-                $ext = match($mime) {
-                    'image/x-icon', 'image/vnd.microsoft.icon' => 'ico',
-                    'image/svg+xml' => 'svg',
-                    'image/gif'     => 'gif',
-                    'image/webp'    => 'webp',
-                    'image/jpeg'    => 'jpg',
-                    default         => 'png',
-                };
-                $saveName = "favicon.{$ext}";
                 // Remove old favicons
                 foreach (glob($faviconDir . 'favicon.*') as $old) @unlink($old);
-                move_uploaded_file($file['tmp_name'], $faviconDir . $saveName);
-                Config::set($pdo, 'favicon_file', $saveName);
-                $flash = "Favicon berhasil diupload! ({$saveName})";
+
+                $isSvgOrIco = in_array($mime, ['image/svg+xml', 'image/x-icon', 'image/vnd.microsoft.icon']);
+                
+                if ($isSvgOrIco) {
+                    // Save SVG or ICO directly without GD compression
+                    $ext = $mime === 'image/svg+xml' ? 'svg' : 'ico';
+                    $saveName = "favicon.{$ext}";
+                    move_uploaded_file($file['tmp_name'], $faviconDir . $saveName);
+                    Config::set($pdo, 'favicon_file', $saveName);
+                    $flash = "Favicon berhasil diupload! ({$saveName})";
+                } else {
+                    // Compress using GD for JPEG, PNG, WEBP, GIF
+                    // We will save it uniformly as a highly compressed webp or png to be optimal
+                    $saveName = "favicon.webp";
+                    
+                    $img = match($mime) {
+                        'image/jpeg' => @imagecreatefromjpeg($file['tmp_name']),
+                        'image/png'  => @imagecreatefrompng($file['tmp_name']),
+                        'image/webp' => @imagecreatefromwebp($file['tmp_name']),
+                        'image/gif'  => @imagecreatefromgif($file['tmp_name']),
+                        default      => false
+                    };
+
+                    if ($img !== false) {
+                        // Max out favicon size at 128x128 for lightness
+                        $width = imagesx($img);
+                        $height = imagesy($img);
+                        
+                        $dim = 128;
+                        $scaled = imagecreatetruecolor($dim, $dim);
+                        
+                        // Preserve transparency
+                        imagealphablending($scaled, false);
+                        imagesavealpha($scaled, true);
+                        $transparent = imagecolorallocatealpha($scaled, 255, 255, 255, 127);
+                        imagefilledrectangle($scaled, 0, 0, $dim, $dim, $transparent);
+                        
+                        imagecopyresampled($scaled, $img, 0, 0, 0, 0, $dim, $dim, $width, $height);
+                        
+                        // Save as webp with high compression (quality 80)
+                        imagewebp($scaled, $faviconDir . $saveName, 80);
+                        
+                        imagedestroy($img);
+                        imagedestroy($scaled);
+                        
+                        Config::set($pdo, 'favicon_file', $saveName);
+                        $flash = "Favicon diupload & dikompres otomatis ke 128x128 ({$saveName})!";
+                    } else {
+                        // Fallback if GD fails somehow
+                        $ext = 'png';
+                        $saveName = "favicon.{$ext}";
+                        move_uploaded_file($file['tmp_name'], $faviconDir . $saveName);
+                        Config::set($pdo, 'favicon_file', $saveName);
+                        $flash = "Favicon berhasil diupload! ({$saveName})";
+                    }
+                }
             }
         }
     }
@@ -134,7 +177,7 @@ require __DIR__ . '/partials/header.php';
           <div class="file-drop-zone" id="favicon-drop" onclick="document.getElementById('favicon-input').click()">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             <div id="drop-label">Klik atau drag & drop file</div>
-            <div style="font-size:12px;color:var(--c-text-hint);margin-top:4px">PNG, ICO, SVG, JPG, WebP — maks 512KB</div>
+            <div style="font-size:12px;color:var(--c-text-hint);margin-top:4px">PNG, ICO, SVG, JPG, WebP — maks 5MB (auto compress)</div>
           </div>
           <input type="file" id="favicon-input" name="favicon" accept="image/*,.ico" style="display:none" onchange="previewFavicon(this)">
         </div>

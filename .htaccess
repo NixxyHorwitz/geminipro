@@ -4,10 +4,11 @@
 Options -Indexes
 
 # Protect sensitive files
-<FilesMatch "(\.env|bootstrap\.php|schema\.sql|\.git)">
+<FilesMatch "(\.env|bootstrap\.php|schema\.sql|error_log\.txt|\.git)">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
+
 
 # Block access to src/ and bot/ directories directly
 <IfModule mod_rewrite.c>

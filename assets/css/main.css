@@ -236,8 +236,8 @@ p  { margin-bottom: 8px; }
 }
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   max-width: var(--max-w);
   margin: 0 auto;
 }
@@ -379,17 +379,32 @@ p  { margin-bottom: 8px; }
 .method-card__sub   { font-size: 11px; color: var(--c-text-sec); margin-top: 2px; }
 
 /* --- Responsive --- */
+@media (max-width: 1024px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 768px) {
   .header { padding: 0 16px; }
+  .header__nav .btn--ghost { display: none; }
   .hero { padding: 48px 16px 40px; }
   .hero__subtitle { font-size: 16px; }
   .pricing-section { padding: 0 16px 48px; }
-  .pricing-card__header, .pricing-card__body { padding: 24px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .method-cards { grid-template-columns: 1fr; }
+  .pricing-card__header, .pricing-card__body { padding: 20px; }
+  .features-section { padding: 48px 16px; }
+  .features-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .feature-card { padding: 16px; }
+  .feature-card__icon { width: 36px; height: 36px; margin-bottom: 12px; }
+  .feature-card__title { font-size: 13px; }
+  .feature-card__desc { font-size: 12px; }
+  .trust-bar { gap: 16px; padding: 20px 16px; }
+  .method-cards { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 480px) {
   .btn--lg { height: 44px; padding: 0 24px; font-size: 15px; }
   .pricing-card__amount { font-size: 32px; }
+  .features-grid { grid-template-columns: 1fr; gap: 10px; }
+  .method-cards { grid-template-columns: 1fr; }
+  .hero__subtitle { font-size: 15px; }
+  .trust-bar { flex-direction: column; gap: 10px; align-items: flex-start; padding: 16px; }
 }

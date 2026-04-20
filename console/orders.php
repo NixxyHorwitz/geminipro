@@ -31,6 +31,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $flash = $ok ? "Order {$code} berhasil ditolak." : "Gagal menolak order.";
         if (!$ok) $flashType = 'error';
     }
+    if ($action === 'delete' && $code) {
+        $stmt = $pdo->prepare("DELETE FROM orders WHERE order_code = ?");
+        $ok   = $stmt->execute([$code]) && $stmt->rowCount() > 0;
+        $flash = $ok ? "Order {$code} berhasil dihapus." : "Gagal hapus order.";
+        if (!$ok) $flashType = 'error';
+    }
+    if ($action === 'delete_rejected') {
+        $cnt = $pdo->exec("DELETE FROM orders WHERE status IN ('rejected','expired')");
+        $flash = "Berhasil hapus {$cnt} order rejected/expired.";
+    }
     if ($action === 'expire_all') {
         $cnt = $order->expire();
         $flash = "Expired {$cnt} order yang telah melewati batas waktu.";
@@ -88,6 +98,11 @@ require __DIR__ . '/partials/header.php';
     <p class="page-sub">Total <?= number_format($totalRows) ?> order ditemukan</p>
   </div>
   <div class="page-header__actions">
+    <form method="POST" style="display:flex;gap:8px" onsubmit="return confirm('Hapus semua order rejected & expired?')">
+      <?= csrf_field() ?>
+      <input type="hidden" name="action" value="delete_rejected">
+      <button type="submit" class="btn btn--ghost btn--sm" style="color:var(--c-red)">Hapus Rejected/Expired</button>
+    </form>
     <form method="POST" onsubmit="return confirm('Expire semua order kadaluarsa?')">
       <?= csrf_field() ?>
       <input type="hidden" name="action" value="expire_all">
@@ -175,19 +190,25 @@ require __DIR__ . '/partials/header.php';
             <div style="font-size:11px;color:var(--c-text-hint)"><?= date('H:i', strtotime($o['created_at'])) ?></div>
           </td>
           <td>
+            <div style="display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap">
             <?php if ($o['status'] === 'pending'): ?>
-            <div style="display:flex;gap:6px;justify-content:flex-end">
               <form method="POST" style="display:inline" onsubmit="return confirm('Konfirmasi order <?= $o['order_code'] ?>?')">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="confirm">
                 <input type="hidden" name="order_code" value="<?= $o['order_code'] ?>">
-                <button type="submit" class="btn btn--success btn--xs">✓ Confirm</button>
+                <button type="submit" class="btn btn--success btn--xs">✓</button>
               </form>
-              <button type="button" class="btn btn--danger btn--xs" onclick="openRejectModal('<?= $o['order_code'] ?>')">✗ Tolak</button>
-            </div>
-            <?php else: ?>
-            <div style="text-align:right;color:var(--c-text-hint);font-size:12px">—</div>
+              <button type="button" class="btn btn--danger btn--xs" onclick="openRejectModal('<?= $o['order_code'] ?>')">✗</button>
             <?php endif; ?>
+              <form method="POST" style="display:inline" onsubmit="return confirm('Hapus order <?= $o['order_code'] ?> secara permanen?')">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="order_code" value="<?= $o['order_code'] ?>">
+                <button type="submit" class="btn btn--ghost btn--xs" style="color:var(--c-red)" title="Hapus permanen">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                </button>
+              </form>
+            </div>
           </td>
         </tr>
         <?php endforeach; ?>

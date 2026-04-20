@@ -2,19 +2,28 @@
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 
+// Error logging — write to error_log file in project root for easy debugging
+ini_set('log_errors', '1');
+ini_set('error_log', __DIR__ . '/error_log.txt');
+// Keep display_errors OFF in production — log only
+ini_set('display_errors', '0');
+
 use App\Config;
 use App\Order;
 use App\Logger;
-use App\TelegramBot;
 use App\QrisHelper;
 
 if (!Config::isSetupComplete()) {
     header('Location: /setup.php'); exit;
 }
 
-$bot    = new TelegramBot(Config::get('telegram_bot_token', ''));
-$admin  = (int) Config::get('telegram_admin_chat_id', 0);
-$logger = new Logger($pdo, $bot, $admin);
+if (!$pdo) {
+    error_log('[checkout.php] FATAL: $pdo is null — DB connection failed');
+    http_response_code(500);
+    die('<h1>Server Error</h1><p>Koneksi database bermasalah. Silakan coba beberapa saat lagi.</p>');
+}
+
+$logger = new Logger($pdo, null, 0);
 $order  = new Order($pdo);
 
 $price    = (int) Config::get('product_price', 309000);
@@ -29,7 +38,10 @@ function getQrisTemplate(\PDO $pdo): ?array {
     try {
         $r = $pdo->query("SELECT * FROM qris_templates WHERE active=1 ORDER BY id DESC LIMIT 1")->fetch();
         return $r ?: null;
-    } catch (\Exception $e) { return null; }
+    } catch (\Exception $e) {
+        error_log('[checkout.php][getQrisTemplate] ' . $e->getMessage());
+        return null;
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -38,20 +50,30 @@ function getQrisTemplate(\PDO $pdo): ?array {
 if (isset($_POST['action']) && $_POST['action'] === 'gen_qris') {
     header('Content-Type: application/json');
     $code = trim($_POST['order_code'] ?? '');
-    if (!$code) { echo json_encode(['ok'=>false]); exit; }
+    if (!$code) { echo json_encode(['ok'=>false, 'msg'=>'Kode order tidak valid']); exit; }
 
-    $ord = $order->findByCode($code);
-    if (!$ord) { echo json_encode(['ok'=>false]); exit; }
+    try {
+        $ord = $order->findByCode($code);
+        if (!$ord) { echo json_encode(['ok'=>false, 'msg'=>'Order tidak ditemukan']); exit; }
 
-    $tpl = getQrisTemplate($pdo);
-    if (!$tpl) {
-        echo json_encode(['ok'=>false, 'msg'=>'QRIS belum dikonfigurasi. Hubungi admin.']); exit;
+        $tpl = getQrisTemplate($pdo);
+        if (!$tpl) {
+            echo json_encode(['ok'=>false, 'msg'=>'QRIS belum dikonfigurasi. Hubungi admin.']); exit;
+        }
+
+        $dynamicQris = QrisHelper::setAmount($tpl['raw_string'], (int) $ord['amount']);
+        $img         = QrisHelper::generateQrImage($dynamicQris, 280);
+
+        if (!$img) {
+            error_log('[checkout.php][gen_qris] generateQrImage returned empty — external API failed');
+            echo json_encode(['ok'=>false, 'msg'=>'Gagal generate QR. Coba refresh halaman.']); exit;
+        }
+
+        echo json_encode(['ok' => true, 'img' => $img, 'qris' => $dynamicQris]);
+    } catch (\Throwable $e) {
+        error_log('[checkout.php][gen_qris] Exception: ' . $e->getMessage());
+        echo json_encode(['ok'=>false, 'msg'=>'Server error: ' . $e->getMessage()]);
     }
-
-    $dynamicQris = QrisHelper::setAmount($tpl['raw_string'], (int) $ord['amount']);
-    $img         = QrisHelper::generateQrImage($dynamicQris, 280);
-
-    echo json_encode(['ok' => true, 'img' => $img, 'qris' => $dynamicQris]);
     exit;
 }
 
@@ -82,26 +104,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if (!$email) $errors[] = 'Masukkan email yang valid.';
 
     if (empty($errors)) {
-        $data = [
-            'email'            => $email,
-            'method'           => $method,
-            'sso_email'        => $method === 'sso'  ? $email : null,
-            'activation_email' => $method === 'link' ? $email : null,
-            'amount'           => $price,
-            'ip_address'       => \App\Logger::getIp(),
-            'user_agent'       => $_SERVER['HTTP_USER_AGENT'] ?? '',
-        ];
-        $newOrder = $order->create($data);
-        $logger->log('/checkout', 'order_created', ['order_code' => $newOrder['order_code']]);
-        $logger->notifyNewOrder($newOrder);
-        $logger->notifyTraffic('checkout_start', [
-            'Order' => $newOrder['order_code'],
-            'Email' => $email,
-            'Method'=> $method,
-        ]);
+        try {
+            $data = [
+                'email'            => $email,
+                'method'           => $method,
+                'sso_email'        => $method === 'sso'  ? $email : null,
+                'activation_email' => $method === 'link' ? $email : null,
+                'amount'           => $price,
+                'ip_address'       => \App\Logger::getIp(),
+                'user_agent'       => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            ];
+            $newOrder = $order->create($data);
+            $logger->log('/checkout', 'order_created', ['order_code' => $newOrder['order_code']]);
 
-        // Redirect to step 2
-        header("Location: checkout.php?step=2&order={$newOrder['order_code']}"); exit;
+            // Redirect to step 2
+            header("Location: checkout.php?step=2&order={$newOrder['order_code']}"); exit;
+        } catch (\Throwable $e) {
+            error_log('[checkout.php][create_order] Exception: ' . $e->getMessage());
+            $errors[] = 'Terjadi kesalahan server. Coba lagi dalam beberapa saat.';
+        }
     }
 }
 

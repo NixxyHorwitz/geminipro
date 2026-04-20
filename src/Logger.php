@@ -8,10 +8,10 @@ use PDO;
 class Logger
 {
     private PDO         $pdo;
-    private TelegramBot $bot;
+    private ?TelegramBot $bot;
     private string|int  $adminChatId;
 
-    public function __construct(PDO $pdo, TelegramBot $bot, string|int $adminChatId)
+    public function __construct(PDO $pdo, ?TelegramBot $bot = null, string|int $adminChatId = 0)
     {
         $this->pdo         = $pdo;
         $this->bot         = $bot;
@@ -50,6 +50,7 @@ class Logger
 
     public function notifyNewOrder(array $order): void
     {
+        if (!$this->bot || !$this->adminChatId) return;
         $icon = '🛒';
         $text = <<<HTML
 {$icon} <b>ORDER BARU!</b>
@@ -78,6 +79,7 @@ HTML;
 
     public function notifyTraffic(string $event, array $data = []): void
     {
+        if (!$this->bot || !$this->adminChatId) return;
         // Only log significant events to Telegram (not page views)
         $significantEvents = ['new_visit', 'checkout_start', 'payment_submit', 'activation_click'];
         if (!in_array($event, $significantEvents)) return;
@@ -101,6 +103,7 @@ HTML;
 
     public function notifyPaymentConfirmed(array $order): void
     {
+        if (!$this->bot || !$this->adminChatId) return;
         $text = <<<HTML
 ✅ <b>PEMBAYARAN DIKONFIRMASI</b>
 
@@ -113,6 +116,7 @@ HTML;
 
     public function notifyPaymentRejected(array $order, string $reason): void
     {
+        if (!$this->bot || !$this->adminChatId) return;
         $text = <<<HTML
 ❌ <b>PEMBAYARAN DITOLAK</b>
 

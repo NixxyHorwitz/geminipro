@@ -93,6 +93,13 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     <div style="display:flex;gap:2px"><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span></div>
     <span style="font-size:13px;color:var(--c-text-sec);font-weight:500">4.9/5 dari <strong style="color:var(--c-text-primary)">1.200+</strong> pengguna aktif</span>
   </div>
+  <!-- Gift info badge -->
+  <div class="fade-up fade-up--4" style="margin-top:20px;display:flex;justify-content:center">
+    <div style="display:inline-flex;align-items:center;gap:10px;background:#e8f0fe;border:1px solid #c6d9f8;border-radius:12px;padding:10px 20px;font-size:13px;color:#1a73e8;font-weight:500">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.31.18-.62.18-.97C18 3.35 16.65 2 15.03 2c-.98 0-1.84.49-2.35 1.22L12 4.21l-.68-.99C10.81 2.49 9.95 2 8.97 2 7.35 2 6 3.35 6 4.97c0 .36.11.67.18.97H4c-1.11 0-2 .89-2 2v1c0 .57.43 1 1 1h18c.57 0 1-.43 1-1V8c0-1.11-.89-2-2-2zm-5-.03c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM9 5.03c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zM4 11v8c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2v-8H4zm6 7H6v-5h4v5zm8 0h-4v-5h4v5z"/></svg>
+      Aktivasi via <strong style="margin:0 3px">Google Gift</strong> — dikirim langsung ke email Anda
+    </div>
+  </div>
 </section>
 
 <!-- TRUST BAR -->
@@ -255,8 +262,8 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     $steps = [
       ['1','Masukkan Email','Isi alamat email tujuan aktivasi Anda'],
       ['2','Bayar QRIS','Scan QR Code via e-wallet pilihan Anda'],
-      ['3','Admin Konfirmasi','Pembayaran diverifikasi dalam 1–5 menit'],
-      ['4','Aktif!','Link undangan dikirim ke email Anda'],
+      ['3','Cek Otomatis','Sistem otomatis memverifikasi pembayaran Anda'],
+      ['4','Gift Terkirim!','Google AI Pro dikirim sebagai Gift ke email Anda'],
     ];
     foreach ($steps as [$n, $t, $d]):
     ?>
@@ -300,11 +307,11 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   <div id="faq-list"></div>
   <?php
   $faqs = [
-    ['Apakah ini resmi dari Google?', 'Ini adalah layanan reseller berlisensi. Setelah pembayaran dikonfirmasi, Anda akan mendapat link aktivasi Google AI Pro asli.'],
-    ['Berapa lama proses aktivasi?', 'Biasanya dalam 1-5 menit setelah pembayaran dikonfirmasi admin kami.'],
+    ['Apakah ini resmi dari Google?', 'Ya. Sistem kami mengirimkan Google AI Pro langsung sebagai <strong>Google Gift</strong> resmi ke akun Google Anda. Link yang Anda terima adalah undangan asli dari server Google, bukan pihak ketiga.'],
+    ['Berapa lama proses aktivasi?', 'Pembayaran dicek secara otomatis oleh sistem. Setelah terverifikasi, Gift Google AI Pro langsung dikirim ke email Anda — biasanya dalam hitungan menit.'],
     ['Metode pembayaran apa yang diterima?', 'Saat ini hanya QRIS — bisa dibayar lewat GoPay, OVO, Dana, QRIS BCA, Shopeepay, dan semua dompet digital yang mendukung QRIS.'],
     ['Apakah ada garansi?', 'Ya, jika ada masalah dengan aktivasi dalam 7 hari pertama, kami akan refund penuh.'],
-    ['Bagaimana proses aktivasinya?', 'Setelah pembayaran dikonfirmasi, admin akan mengirimkan Anda link undangan (invite) resmi Google AI Pro ke alamat email yang Anda berikan.'],
+    ['Bagaimana cara kerja Google Gift?', 'Setelah pembayaran dikonfirmasi, sistem kami akan mengirimkan Google AI Pro sebagai &ldquo;gift&rdquo; resmi ke email Anda. Anda cukup klik tombol &ldquo;Claim Gift&rdquo; di email dan layanan langsung aktif di akun Google Anda.'],
   ];
   foreach ($faqs as [$q, $a]):
   ?>

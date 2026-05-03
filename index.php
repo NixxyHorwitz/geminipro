@@ -53,6 +53,9 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 </head>
 <body>
 
+<!-- ANNOUNCEMENT BAR -->
+<div class="announce-bar">🎉 Promo Terbatas — Paket 12 Bulan Google AI Pro. <a href="#pricing">Beli Sekarang →</a></div>
+
 <!-- HEADER -->
 <header class="header">
   <a href="/" class="header__logo">
@@ -76,7 +79,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
     Reseller Resmi · Bergaransi
   </div>
-  <h1 class="hero__title fade-up fade-up--1">
+  <h1 class="hero__title fade-up fade-up--1" style="font-weight:700">
     Akses Penuh <span>Google AI Pro</span><br>untuk Kreativitas Tanpa Batas
   </h1>
   <p class="hero__subtitle fade-up fade-up--2">
@@ -85,6 +88,10 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   <div class="fade-up fade-up--3" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
     <a href="#pricing" class="btn btn--primary btn--lg" id="hero-cta">Mulai Sekarang — <?= $priceStr ?></a>
     <a href="#features" class="btn btn--ghost btn--lg">Lihat Semua Fitur</a>
+  </div>
+  <div class="fade-up fade-up--4" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px">
+    <div style="display:flex;gap:2px"><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span></div>
+    <span style="font-size:13px;color:var(--c-text-sec);font-weight:500">4.9/5 dari <strong style="color:var(--c-text-primary)">1.200+</strong> pengguna aktif</span>
   </div>
 </section>
 
@@ -108,7 +115,15 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   </div>
 </div>
 
-<!-- FEATURES SECTION -->
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-bar__inner">
+    <div class="stat-item"><div class="stat-item__num"><span>1.200</span>+</div><div class="stat-item__label">Pengguna Aktif</div></div>
+    <div class="stat-item"><div class="stat-item__num"><span>4.9</span>/5</div><div class="stat-item__label">Rating Kepuasan</div></div>
+    <div class="stat-item"><div class="stat-item__num">&lt;<span>5</span> mnt</div><div class="stat-item__label">Rata-rata Aktivasi</div></div>
+    <div class="stat-item"><div class="stat-item__num"><span>100</span>%</div><div class="stat-item__label">Garansi Uang Kembali</div></div>
+  </div>
+</div>
 <section class="features-section" id="features">
   <h2>Semua yang Anda Butuhkan</h2>
   <p class="subtitle">Satu langganan, akses ke seluruh ekosistem AI Google</p>
@@ -154,11 +169,22 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   </div>
 </section>
 
+<!-- SECURITY BADGES -->
+<div class="security-section">
+  <div class="security-section__inner">
+    <div class="sec-badge"><div class="sec-badge__icon">🔒</div><div class="sec-badge__text"><div class="sec-badge__title">Pembayaran Aman</div><div class="sec-badge__sub">Diproses via QRIS resmi BI</div></div></div>
+    <div class="sec-badge"><div class="sec-badge__icon">✅</div><div class="sec-badge__text"><div class="sec-badge__title">Reseller Terverifikasi</div><div class="sec-badge__sub">Link aktivasi asli dari Google</div></div></div>
+    <div class="sec-badge"><div class="sec-badge__icon">💬</div><div class="sec-badge__text"><div class="sec-badge__title">Support 24/7</div><div class="sec-badge__sub">Resp. cepat via Telegram</div></div></div>
+    <div class="sec-badge"><div class="sec-badge__icon">🔄</div><div class="sec-badge__text"><div class="sec-badge__title">Garansi 7 Hari</div><div class="sec-badge__sub">Refund penuh jika gagal aktif</div></div></div>
+  </div>
+</div>
+
 <!-- PRICING -->
 <section class="pricing-section" id="pricing">
   <div class="pricing-card fade-up">
     <div class="pricing-card__badge">Terlaris</div>
     <div class="pricing-card__header">
+      <div style="margin-bottom:8px"><span class="urgency-badge">🔥 Hanya tersisa beberapa slot hari ini</span></div>
       <div class="pricing-card__name">Google AI Pro</div>
       <div class="pricing-card__tagline">Dapatkan akses lebih tinggi ke fitur baru dan canggih</div>
       <div class="pricing-card__price">
@@ -196,27 +222,50 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 </section>
 
 <!-- HOW IT WORKS -->
-<section style="padding:64px 24px;max-width:800px;margin:0 auto">
-  <h2 style="text-align:center;margin-bottom:8px">Cara Kerja</h2>
-  <p style="text-align:center;color:var(--c-text-sec);font-size:16px;margin-bottom:48px">Proses mudah, aktivasi cepat</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:32px;text-align:center">
+<section class="how-section">
+  <h2>Cara Kerja</h2>
+  <p class="subtitle">Proses mudah, aktivasi cepat dalam hitungan menit</p>
+  <div class="steps-grid">
     <?php
     $steps = [
-      ['1','Pilih Email','Masukkan alamat email Anda untuk menerima link aktivasi'],
-      ['2','Bayar QRIS','Scan QR Code, bayar lewat aplikasi e-wallet Anda'],
-      ['3','Konfirmasi','Admin mengkonfirmasi pembayaran Anda via Telegram'],
-      ['4','Aktifasi','Terima link aktivasi via email dan nikmati fitur Google AI Pro'],
+      ['1','Masukkan Email','Isi alamat email tujuan aktivasi Anda'],
+      ['2','Bayar QRIS','Scan QR Code via e-wallet pilihan Anda'],
+      ['3','Admin Konfirmasi','Pembayaran diverifikasi dalam 1–5 menit'],
+      ['4','Aktif!','Link undangan dikirim ke email Anda'],
     ];
     foreach ($steps as [$n, $t, $d]):
     ?>
-    <div>
-      <div style="width:52px;height:52px;border-radius:50%;background:var(--c-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;margin:0 auto 16px">
-        <?= $n ?>
-      </div>
-      <div style="font-weight:600;margin-bottom:6px"><?= $t ?></div>
-      <div style="font-size:13px;color:var(--c-text-sec)"><?= $d ?></div>
+    <div class="step-item">
+      <div class="step-circle"><?= $n ?></div>
+      <div class="step-item__title"><?= $t ?></div>
+      <div class="step-item__desc"><?= $d ?></div>
     </div>
     <?php endforeach; ?>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--c-bg-alt);border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border);padding:72px 24px">
+  <div style="max-width:1000px;margin:0 auto">
+    <h2 style="text-align:center;margin-bottom:8px">Apa Kata Pengguna Kami</h2>
+    <p style="text-align:center;color:var(--c-text-sec);font-size:16px;margin-bottom:48px">Lebih dari 1.200 pengguna telah merasakan manfaatnya</p>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="testi-text">“Aktivasi super cepat! Ga sampe 5 menit langsung bisa pakai Gemini Pro. Harganya juga jauh lebih hemat dibanding beli sendiri.”</div>
+        <div class="testi-author"><div class="testi-avatar">A</div><div><div class="testi-name">Andi S.</div><div class="testi-loc">Jakarta</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="testi-text">“Awalnya ragu, tapi ternyata legit banget. Link-nya asli dari Google, langsung kena ke akun saya. CS-nya ramah dan responsif.”</div>
+        <div class="testi-author"><div class="testi-avatar" style="background:#e6f4ea;color:#34a853">R</div><div><div class="testi-name">Rina P.</div><div class="testi-loc">Surabaya</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="testi-text">“Udah langganan 3x, gak pernah ada masalah. Selalu on-time dan fitur Veo buat bikin video keren banget buat konten saya.”</div>
+        <div class="testi-author"><div class="testi-avatar" style="background:#fff8e1;color:#f29900">B</div><div><div class="testi-name">Budi W.</div><div class="testi-loc">Bandung</div></div></div>
+      </div>
+    </div>
   </div>
 </section>
 

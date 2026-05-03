@@ -77,27 +77,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'send_activati
 
 // ── Send Google Gift email ────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_gift') {
-    $orderCode = trim($_POST['order_code'] ?? '');
-    $linkUrl   = trim($_POST['gift_link']  ?? '');
-    $ord = (new Order($pdo))->findByCode($orderCode);
+    $orderCode  = trim($_POST['order_code']    ?? '');
+    $linkUrl    = trim($_POST['gift_link']      ?? '');
+    $manualTo   = trim($_POST['gift_to_email'] ?? '');
 
-    if (!$ord) {
-        $flash = "Order {$orderCode} tidak ditemukan."; $flashType = 'error';
+    // Resolve recipient: from order or manual
+    if ($orderCode) {
+        $ord  = (new Order($pdo))->findByCode($orderCode);
+        $toEmail = $ord['email'] ?? '';
+        $name    = explode('@', $toEmail)[0];
+    } else {
+        $ord     = null;
+        $toEmail = $manualTo;
+        $name    = explode('@', $toEmail)[0];
+    }
+
+    if (!$toEmail) {
+        $flash = 'Email penerima tidak boleh kosong.'; $flashType = 'error';
     } elseif (!$linkUrl) {
         $flash = 'Link gift tidak boleh kosong.'; $flashType = 'error';
     } else {
         $m    = Mailer::fromConfig();
-        $name = explode('@', $ord['email'])[0];
         $html = Mailer::buildActivationEmail($name, $linkUrl);
         $subj = 'Anda mendapatkan hadiah Google AI Pro!';
-        $ok   = $m->send($ord['email'], $subj, $html);
+        $ok   = $m->send($toEmail, $subj, $html);
         if ($ok) {
-            // Mark order as activated if confirmed
-            if ($ord['status'] === 'confirmed') {
+            if ($ord && $ord['status'] === 'confirmed') {
                 $pdo->prepare("UPDATE orders SET notes = CONCAT(IFNULL(notes,''), ' | Gift sent: ', NOW()) WHERE order_code = ?")
                     ->execute([$orderCode]);
             }
-            $flash = "🎁 Gift email berhasil dikirim ke {$ord['email']}!";
+            $flash = "🎁 Gift email berhasil dikirim ke {$toEmail}!";
         } else {
             $flash = "Gagal kirim gift: {$m->lastError}"; $flashType = 'error';
         }
@@ -379,42 +388,79 @@ require __DIR__ . '/partials/header.php';
     <div class="card__body">
       <div class="alert alert--info" style="margin-bottom:20px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-        <div>Email yang dikirim menggunakan template <strong>Google Gift</strong> — terlihat seperti hadiah resmi dari Google, lengkap dengan logo Google, gift box, dan tombol "Klaim Hadiah Sekarang".</div>
+        <div>Email menggunakan template <strong>Google Gift</strong> resmi. Link aktivasi bisa digenerate otomatis dengan token acak, atau isi manual.</div>
       </div>
-      <form method="POST">
+      <form method="POST" id="form-gift">
         <?= csrf_field() ?>
         <input type="hidden" name="action" value="send_gift">
+
+        <!-- Toggle: dari order atau manual -->
         <div class="form-group">
-          <label class="form-label">Pilih Order</label>
-          <select name="order_code" id="gift-order-select" class="form-control" onchange="fillGiftEmail(this)">
-            <option value="">-- Pilih Order --</option>
-            <?php foreach ($orders as $o): ?>
-            <option value="<?= htmlspecialchars($o['order_code']) ?>"
-                    data-email="<?= htmlspecialchars($o['email']) ?>"
-                    data-status="<?= htmlspecialchars($o['status']) ?>">
-              <?= htmlspecialchars($o['order_code']) ?> — <?= htmlspecialchars($o['email']) ?>
-              (<?= ucfirst($o['status']) ?>)
-            </option>
-            <?php endforeach; ?>
-          </select>
+          <label class="form-label">Mode Penerima</label>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <button type="button" id="btn-mode-order" class="btn btn--primary btn--sm" onclick="setGiftMode('order')">Dari Order</button>
+            <button type="button" id="btn-mode-manual" class="btn btn--ghost btn--sm" onclick="setGiftMode('manual')">Input Manual</button>
+          </div>
+
+          <!-- Mode: dari order -->
+          <div id="gift-mode-order">
+            <select name="order_code" id="gift-order-select" class="form-control" onchange="fillGiftEmail(this)">
+              <option value="">-- Pilih Order --</option>
+              <?php foreach ($orders as $o): ?>
+              <option value="<?= htmlspecialchars($o['order_code']) ?>"
+                      data-email="<?= htmlspecialchars($o['email']) ?>"
+                      data-status="<?= htmlspecialchars($o['status']) ?>">
+                <?= htmlspecialchars($o['order_code']) ?> — <?= htmlspecialchars($o['email']) ?>
+                (<?= ucfirst($o['status']) ?>)
+              </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <!-- Mode: manual -->
+          <div id="gift-mode-manual" style="display:none">
+            <input type="hidden" name="order_code" value="">
+            <input type="email" id="gift-manual-email-input" class="form-control"
+                   placeholder="emailpembeli@gmail.com" autocomplete="off">
+          </div>
         </div>
+
+        <!-- Email tujuan display -->
         <div class="form-group">
           <label class="form-label">Email Tujuan</label>
-          <input type="email" id="gift-target-email" class="form-control" readonly
-                 style="background:var(--c-bg);color:var(--c-text-sec)" placeholder="(auto dari order)">
+          <input type="email" name="gift_to_email" id="gift-target-email" class="form-control"
+                 placeholder="(auto dari order atau isi manual)" required>
+          <div class="form-hint">Email yang akan menerima Google Gift notification</div>
         </div>
+
+        <!-- Link generator -->
+        <div class="form-group">
+          <label class="form-label">Format Link Aktivasi</label>
+          <select id="gift-link-format" class="form-control" onchange="regenerateGiftLink()" style="margin-bottom:8px">
+            <option value="accounts">https://accounts.google.com/activate?token=...</option>
+            <option value="gifts">https://gifts.google.com/activate?token=...</option>
+          </select>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Link Gift / Activation</label>
-          <input type="url" name="gift_link" class="form-control"
-                 placeholder="https://accounts.google.com/..." required>
-          <div class="form-hint">Link aktivasi atau gift Google yang akan diklaim oleh pembeli</div>
+          <div style="display:flex;gap:8px">
+            <input type="url" name="gift_link" id="gift-link-input" class="form-control"
+                   placeholder="https://accounts.google.com/activate?token=..." required style="flex:1">
+            <button type="button" class="btn btn--outline btn--sm" onclick="regenerateGiftLink()" title="Generate token acak" style="white-space:nowrap;flex-shrink:0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+              Generate
+            </button>
+          </div>
+          <div class="form-hint" id="gift-link-preview" style="margin-top:6px;color:var(--c-blue);word-break:break-all;font-size:11px;font-family:monospace"></div>
         </div>
+
         <div style="display:flex;gap:10px">
           <button type="submit" class="btn btn--primary" style="flex:1">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.31.18-.62.18-.97C18 3.35 16.65 2 15.03 2c-.98 0-1.84.49-2.35 1.22L12 4.21l-.68-.99C10.81 2.49 9.95 2 8.97 2 7.35 2 6 3.35 6 4.97c0 .36.11.67.18.97H4c-1.11 0-2 .89-2 2v1c0 .57.43 1 1 1h18c.57 0 1-.43 1-1V8c0-1.11-.89-2-2-2zm-5-.03c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM9 5.03c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zM4 11v8c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2v-8H4zm6 7H6v-5h4v5zm8 0h-4v-5h4v5z"/></svg>
             Kirim Gift Email
           </button>
-          <a href="?tab=preview" class="btn btn--ghost">Preview Template</a>
+          <a href="?tab=preview" class="btn btn--ghost">Preview</a>
         </div>
       </form>
     </div>
@@ -545,7 +591,8 @@ function selectOrder(code, email) {
 
 function fillGiftEmail(sel) {
   const opt = sel.options[sel.selectedIndex];
-  document.getElementById('gift-target-email').value = opt.dataset.email || '';
+  const email = opt.dataset.email || '';
+  document.getElementById('gift-target-email').value = email;
 }
 
 function selectGiftOrder(code, email) {
@@ -555,6 +602,64 @@ function selectGiftOrder(code, email) {
     document.getElementById('gift-target-email').value = email;
   }
 }
+
+function setGiftMode(mode) {
+  const orderDiv  = document.getElementById('gift-mode-order');
+  const manualDiv = document.getElementById('gift-mode-manual');
+  const btnOrder  = document.getElementById('btn-mode-order');
+  const btnManual = document.getElementById('btn-mode-manual');
+  const emailIn   = document.getElementById('gift-target-email');
+
+  if (mode === 'order') {
+    orderDiv.style.display  = '';
+    manualDiv.style.display = 'none';
+    btnOrder.className  = 'btn btn--primary btn--sm';
+    btnManual.className = 'btn btn--ghost btn--sm';
+    emailIn.readOnly = false;
+    emailIn.placeholder = '(auto dari order)';
+    // Re-trigger order select
+    const sel = document.getElementById('gift-order-select');
+    if (sel && sel.value) fillGiftEmail(sel);
+  } else {
+    orderDiv.style.display  = 'none';
+    manualDiv.style.display = '';
+    btnOrder.className  = 'btn btn--ghost btn--sm';
+    btnManual.className = 'btn btn--primary btn--sm';
+    // Sync manual email input to target
+    const manualInput = document.getElementById('gift-manual-email-input');
+    emailIn.readOnly = false;
+    emailIn.placeholder = 'Ketik email pembeli...';
+    manualInput.oninput = () => { emailIn.value = manualInput.value; };
+  }
+}
+
+function generateGiftToken() {
+  // Generate crypto-random token similar to Google's format
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  const arr = new Uint8Array(48);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => chars[b % chars.length]).join('');
+}
+
+function regenerateGiftLink() {
+  const fmt = document.getElementById('gift-link-format').value;
+  const token = generateGiftToken();
+  const base = fmt === 'gifts'
+    ? 'https://gifts.google.com/activate?token='
+    : 'https://accounts.google.com/activate?token=';
+  const url = base + token;
+  const input = document.getElementById('gift-link-input');
+  const preview = document.getElementById('gift-link-preview');
+  input.value = url;
+  preview.textContent = url;
+}
+
+// Auto-generate on page load
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('gift-link-input')) {
+    regenerateGiftLink();
+  }
+});
 
 function fillAllConfirmed() {
   const emails = confirmedOrders.map(o => o.email).join(', ');

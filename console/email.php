@@ -75,6 +75,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'send_activati
     $tab = 'activation';
 }
 
+// ── Send Google Gift email ────────────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'send_gift') {
+    $orderCode = trim($_POST['order_code'] ?? '');
+    $linkUrl   = trim($_POST['gift_link']  ?? '');
+    $ord = (new Order($pdo))->findByCode($orderCode);
+
+    if (!$ord) {
+        $flash = "Order {$orderCode} tidak ditemukan."; $flashType = 'error';
+    } elseif (!$linkUrl) {
+        $flash = 'Link gift tidak boleh kosong.'; $flashType = 'error';
+    } else {
+        $m    = Mailer::fromConfig();
+        $name = explode('@', $ord['email'])[0];
+        $html = Mailer::buildActivationEmail($name, $linkUrl);
+        $subj = 'Anda mendapatkan hadiah Google AI Pro!';
+        $ok   = $m->send($ord['email'], $subj, $html);
+        if ($ok) {
+            // Mark order as activated if confirmed
+            if ($ord['status'] === 'confirmed') {
+                $pdo->prepare("UPDATE orders SET notes = CONCAT(IFNULL(notes,''), ' | Gift sent: ', NOW()) WHERE order_code = ?")
+                    ->execute([$orderCode]);
+            }
+            $flash = "🎁 Gift email berhasil dikirim ke {$ord['email']}!";
+        } else {
+            $flash = "Gagal kirim gift: {$m->lastError}"; $flashType = 'error';
+        }
+    }
+    $tab = 'gift';
+}
+
 // ── Send custom/broadcast email ───────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'send_custom') {
     $toRaw   = trim($_POST['custom_to']      ?? '');
@@ -149,6 +179,7 @@ require __DIR__ . '/partials/header.php';
 <div class="tabs">
   <a href="?tab=smtp"       class="tab-item <?= $tab==='smtp'       ?'active':'' ?>">⚙️ Setup SMTP</a>
   <a href="?tab=activation" class="tab-item <?= $tab==='activation' ?'active':'' ?>">🔗 Kirim Aktivasi</a>
+  <a href="?tab=gift"       class="tab-item <?= $tab==='gift'       ?'active':'' ?>" style="<?= $tab==='gift' ? '' : '' ?>">🎁 Kirim Gift</a>
   <a href="?tab=custom"     class="tab-item <?= $tab==='custom'     ?'active':'' ?>">✉️ Custom Email</a>
   <a href="?tab=preview"    class="tab-item <?= $tab==='preview'    ?'active':'' ?>">👁️ Preview Template</a>
 </div>
@@ -338,6 +369,83 @@ require __DIR__ . '/partials/header.php';
   </div>
 </div>
 
+<!-- ===== TAB: SEND GIFT ===== -->
+<?php elseif ($tab === 'gift'): ?>
+<div class="two-col-grid">
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">🎁 Kirim Google Gift Email</div>
+    </div>
+    <div class="card__body">
+      <div class="alert alert--info" style="margin-bottom:20px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <div>Email yang dikirim menggunakan template <strong>Google Gift</strong> — terlihat seperti hadiah resmi dari Google, lengkap dengan logo Google, gift box, dan tombol "Klaim Hadiah Sekarang".</div>
+      </div>
+      <form method="POST">
+        <?= csrf_field() ?>
+        <input type="hidden" name="action" value="send_gift">
+        <div class="form-group">
+          <label class="form-label">Pilih Order</label>
+          <select name="order_code" id="gift-order-select" class="form-control" onchange="fillGiftEmail(this)">
+            <option value="">-- Pilih Order --</option>
+            <?php foreach ($orders as $o): ?>
+            <option value="<?= htmlspecialchars($o['order_code']) ?>"
+                    data-email="<?= htmlspecialchars($o['email']) ?>"
+                    data-status="<?= htmlspecialchars($o['status']) ?>">
+              <?= htmlspecialchars($o['order_code']) ?> — <?= htmlspecialchars($o['email']) ?>
+              (<?= ucfirst($o['status']) ?>)
+            </option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Tujuan</label>
+          <input type="email" id="gift-target-email" class="form-control" readonly
+                 style="background:var(--c-bg);color:var(--c-text-sec)" placeholder="(auto dari order)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Link Gift / Activation</label>
+          <input type="url" name="gift_link" class="form-control"
+                 placeholder="https://accounts.google.com/..." required>
+          <div class="form-hint">Link aktivasi atau gift Google yang akan diklaim oleh pembeli</div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button type="submit" class="btn btn--primary" style="flex:1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.31.18-.62.18-.97C18 3.35 16.65 2 15.03 2c-.98 0-1.84.49-2.35 1.22L12 4.21l-.68-.99C10.81 2.49 9.95 2 8.97 2 7.35 2 6 3.35 6 4.97c0 .36.11.67.18.97H4c-1.11 0-2 .89-2 2v1c0 .57.43 1 1 1h18c.57 0 1-.43 1-1V8c0-1.11-.89-2-2-2zm-5-.03c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM9 5.03c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zM4 11v8c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2v-8H4zm6 7H6v-5h4v5zm8 0h-4v-5h4v5z"/></svg>
+            Kirim Gift Email
+          </button>
+          <a href="?tab=preview" class="btn btn--ghost">Preview Template</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order list -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">Order Siap Dikirim Gift</div>
+    </div>
+    <div class="card__body" style="padding:0">
+      <table class="table table--compact">
+        <thead><tr><th>Kode</th><th>Email</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <?php foreach ($orders as $o): ?>
+          <tr style="cursor:pointer" onclick="selectGiftOrder('<?= $o['order_code'] ?>','<?= htmlspecialchars($o['email']) ?>')">
+            <td><code style="font-size:12px"><?= htmlspecialchars($o['order_code']) ?></code></td>
+            <td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis"><?= htmlspecialchars($o['email']) ?></td>
+            <td><span class="badge badge--<?= match($o['status']) { 'confirmed'=>'success','pending'=>'warn', default=>'neutral' } ?>"><?= ucfirst($o['status']) ?></span></td>
+            <td><button type="button" class="btn btn--xs btn--ghost" onclick="event.stopPropagation();selectGiftOrder('<?= $o['order_code'] ?>','<?= htmlspecialchars($o['email']) ?>')">Pilih</button></td>
+          </tr>
+          <?php endforeach; ?>
+          <?php if (empty($orders)): ?>
+          <tr><td colspan="4" style="text-align:center;color:var(--c-text-hint);padding:24px">Tidak ada order</td></tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- ===== TAB: CUSTOM EMAIL ===== -->
 <?php elseif ($tab === 'custom'): ?>
 <div class="card">
@@ -432,6 +540,19 @@ function selectOrder(code, email) {
   if (sel) {
     sel.value = code;
     document.getElementById('target-email').value = email;
+  }
+}
+
+function fillGiftEmail(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('gift-target-email').value = opt.dataset.email || '';
+}
+
+function selectGiftOrder(code, email) {
+  const sel = document.getElementById('gift-order-select');
+  if (sel) {
+    sel.value = code;
+    document.getElementById('gift-target-email').value = email;
   }
 }
 

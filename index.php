@@ -163,7 +163,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
       <div class="pricing-card__tagline">Dapatkan akses lebih tinggi ke fitur baru dan canggih</div>
       <div class="pricing-card__price">
         <div class="pricing-card__amount"><?= $priceStr ?></div>
-        <div class="pricing-card__period">/bln</div>
+        <div class="pricing-card__period">/12 bulan</div>
       </div>
       <div class="pricing-card__promo">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
@@ -202,10 +202,10 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:32px;text-align:center">
     <?php
     $steps = [
-      ['1','Pilih Metode','Pilih aktivasi SSO (Google login) atau link aktivasi via email'],
+      ['1','Pilih Email','Masukkan alamat email Anda untuk menerima link aktivasi'],
       ['2','Bayar QRIS','Scan QR Code, bayar lewat aplikasi e-wallet Anda'],
       ['3','Konfirmasi','Admin mengkonfirmasi pembayaran Anda via Telegram'],
-      ['4','Aktifasi','Terima link aktivasi dan nikmati semua fitur Google AI Pro'],
+      ['4','Aktifasi','Terima link aktivasi via email dan nikmati fitur Google AI Pro'],
     ];
     foreach ($steps as [$n, $t, $d]):
     ?>
@@ -230,7 +230,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     ['Berapa lama proses aktivasi?', 'Biasanya dalam 1-5 menit setelah pembayaran dikonfirmasi admin kami.'],
     ['Metode pembayaran apa yang diterima?', 'Saat ini hanya QRIS — bisa dibayar lewat GoPay, OVO, Dana, QRIS BCA, Shopeepay, dan semua dompet digital yang mendukung QRIS.'],
     ['Apakah ada garansi?', 'Ya, jika ada masalah dengan aktivasi dalam 7 hari pertama, kami akan refund penuh.'],
-    ['Apa yang dimaksud metode SSO vs Link Aktivasi?', 'SSO: Anda login dengan akun Google Anda. Link Aktivasi: Admin mengirimi Anda link invite ke email tujuan.'],
+    ['Bagaimana proses aktivasinya?', 'Setelah pembayaran dikonfirmasi, admin akan mengirimkan Anda link undangan (invite) resmi Google AI Pro ke alamat email yang Anda berikan.'],
   ];
   foreach ($faqs as [$q, $a]):
   ?>

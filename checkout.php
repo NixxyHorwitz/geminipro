@@ -101,10 +101,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'check_status') {
 // -----------------------------------------------------------------------
 $newOrder = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_order') {
-    $method = $_POST['method'] ?? '';
+    $method = 'link';
     $email  = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
 
-    if (!in_array($method, ['sso','link'])) $errors[] = 'Pilih metode aktivasi.';
     if (!$email) $errors[] = 'Masukkan email yang valid.';
 
     if (empty($errors)) {
@@ -112,8 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $data = [
                 'email'            => $email,
                 'method'           => $method,
-                'sso_email'        => $method === 'sso'  ? $email : null,
-                'activation_email' => $method === 'link' ? $email : null,
+                'sso_email'        => null,
+                'activation_email' => $email,
                 'amount'           => $price,
                 'ip_address'       => \App\Logger::getIp(),
                 'user_agent'       => $_SERVER['HTTP_USER_AGENT'] ?? '',
@@ -204,35 +203,21 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     <div class="alert alert--error">⚠️ <?= htmlspecialchars($e) ?></div>
     <?php endforeach; ?>
 
-    <!-- ===== STEP 1: Pilih metode ===== -->
+    <!-- ===== STEP 1: Masukkan Email ===== -->
     <?php if ($step === 1): ?>
     <div class="step-panel active" id="panel-1">
-      <div class="checkout-section-title">Pilih Metode Aktivasi</div>
-      <div class="checkout-section-sub">Bagaimana Anda ingin mengaktifkan Google AI Pro?</div>
+      <div class="checkout-section-title">Informasi Aktivasi</div>
+      <div class="checkout-section-sub">Ke mana link aktivasi Google AI Pro harus dikirim?</div>
 
       <form method="POST" id="form-checkout">
         <input type="hidden" name="action" value="create_order">
-        <input type="hidden" name="method" id="method-input" value="">
 
-        <div class="method-cards" id="method-cards">
-          <div class="method-card" data-method="sso" onclick="selectMethod('sso',this)">
-            <div class="method-card__icon">🔐</div>
-            <div class="method-card__title">Login SSO</div>
-            <div class="method-card__sub">Login dengan akun Google Anda langsung</div>
-          </div>
-          <div class="method-card" data-method="link" onclick="selectMethod('link',this)">
-            <div class="method-card__icon">📧</div>
-            <div class="method-card__title">Link Aktivasi</div>
-            <div class="method-card__sub">Terima link undangan di email Anda</div>
-          </div>
-        </div>
-
-        <div id="email-section" style="display:none;animation:fadeUp .3s ease both">
+        <div id="email-section" style="animation:fadeUp .3s ease both">
           <div class="form-group">
-            <label class="form-label" id="email-label">Email Google Anda</label>
+            <label class="form-label" id="email-label">Email Tujuan Aktivasi</label>
             <input class="form-control" type="email" name="email" id="email-input"
                    placeholder="nama@gmail.com" required autocomplete="email">
-            <div class="form-hint" id="email-hint">Pastikan ini adalah akun Google yang aktif</div>
+            <div class="form-hint" id="email-hint">Link undangan resmi Google akan dikirim ke alamat email ini</div>
           </div>
           <button type="submit" class="btn btn--primary btn--full btn--lg" id="btn-next">
             Lanjut ke Pembayaran →
@@ -357,7 +342,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     </div>
 
     <div class="order-line">
-      <span class="order-line__label">Harga per bulan</span>
+      <span class="order-line__label">Harga untuk 12 bulan</span>
       <span class="order-line__value"><?= $priceStr ?></span>
     </div>
     <div class="order-line">
@@ -414,29 +399,12 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 <div id="toast-container"></div>
 
 <script>
-// ------- Step 1: Method selector -------
-function selectMethod(method, el) {
-  document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('method-input').value = method;
-  document.getElementById('email-section').style.display = 'block';
-
-  const label = document.getElementById('email-label');
-  const hint  = document.getElementById('email-hint');
-  if (method === 'sso') {
-    label.textContent = 'Email Akun Google Anda';
-    hint.textContent  = 'Email yang akan digunakan untuk login SSO';
-  } else {
-    label.textContent = 'Email Tujuan Aktivasi';
-    hint.textContent  = 'Link undangan akan dikirim ke email ini';
-  }
-  document.getElementById('email-input').focus();
-}
-
+// ------- Step 1: Validation -------
 document.getElementById('form-checkout')?.addEventListener('submit', function(e) {
-  if (!document.getElementById('method-input').value) {
+  const emailInput = document.getElementById('email-input');
+  if (!emailInput || !emailInput.value.trim()) {
     e.preventDefault();
-    alert('Pilih metode aktivasi terlebih dahulu.');
+    alert('Masukkan email Anda terlebih dahulu.');
   }
 });
 

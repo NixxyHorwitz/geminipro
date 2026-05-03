@@ -168,6 +168,12 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 </head>
 <body class="checkout-page">
 
+<!-- Secure Checkout Bar -->
+<div class="checkout-secure-bar">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+  Checkout Aman &amp; Terenkripsi — Pembayaran diproses melalui QRIS resmi Bank Indonesia
+</div>
+
 <!-- Mini header -->
 <header class="header">
   <a href="/" class="header__logo">
@@ -206,6 +212,9 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     <!-- ===== STEP 1: Masukkan Email ===== -->
     <?php if ($step === 1): ?>
     <div class="step-panel active" id="panel-1">
+      <div class="checkout-email-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </div>
       <div class="checkout-section-title">Informasi Aktivasi</div>
       <div class="checkout-section-sub">Ke mana link aktivasi Google AI Pro harus dikirim?</div>
 
@@ -364,29 +373,35 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 
     <div class="checkout-trust">
       <div class="checkout-trust-item">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        Pembayaran 100% Aman
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg>
+        Pembayaran 100% Aman &amp; Terenkripsi
       </div>
       <div class="checkout-trust-item">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        Garansi Uang Kembali 7 Hari
+        Link aktivasi asli langsung dari Google
       </div>
       <div class="checkout-trust-item">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
         Konfirmasi 1&ndash;5 Menit
       </div>
       <div class="checkout-trust-item">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        Semua E-Wallet QRIS
+        Semua E-Wallet QRIS didukung
       </div>
+    </div>
+
+    <!-- Guarantee badge -->
+    <div class="guarantee-badge">
+      <div class="guarantee-badge__icon">🛡️</div>
+      <div><div class="guarantee-badge__title">Garansi Uang Kembali 7 Hari</div><div class="guarantee-badge__text">Jika ada masalah dengan aktivasi, kami refund 100% tanpa pertanyaan.</div></div>
     </div>
 
     <!-- Accepted wallets -->
     <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--c-border)">
-      <div style="font-size:11px;font-weight:600;color:var(--c-text-hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Diterima via QRIS</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--c-text-sec)">
+      <div style="font-size:11px;font-weight:700;color:var(--c-text-hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Diterima via QRIS</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
         <?php foreach (['GoPay','OVO','DANA','ShopeePay','LinkAja','BCA','BRI','BNI','Mandiri','BSI'] as $w): ?>
-        <span style="background:var(--c-bg-alt);border:1px solid var(--c-border);border-radius:4px;padding:3px 8px"><?= $w ?></span>
+        <span class="wallet-pill"><?= $w ?></span>
         <?php endforeach; ?>
       </div>
     </div>

@@ -275,7 +275,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
 
       <div class="alert alert--warn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;margin-top:1px"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-        Jika sudah bayar namun belum dikonfirmasi dalam 15 menit, hubungi admin via Telegram dengan kode order Anda.
+        Jika sudah bayar namun belum dikonfirmasi dalam 15 menit, hubungi admin via Threads dengan kode order dan bukti pembayaran Anda.
       </div>
 
       <div style="text-align:center;margin-top:12px">

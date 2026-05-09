@@ -261,6 +261,9 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
         <li><strong>Developer Program Premium</strong> — Gemini CLI, Jules, Cloud credits</li>
         <li><strong>Gemini di Android Studio</strong></li>
         <li><strong>5 TB Storage</strong> — Foto, Drive, Gmail</li>
+        <li><strong>Claude Sonnet &amp; Opus</strong> — Model Anthropic terbaru via Google AI Pro</li>
+        <li><strong>Claude di Workspace</strong> — Terintegrasi di Docs, Gmail &amp; Sheets</li>
+        <li><strong>Claude via Vertex AI</strong> — Haiku, Sonnet &amp; Opus, enterprise-grade</li>
       </ul>
     </div>
   </div>

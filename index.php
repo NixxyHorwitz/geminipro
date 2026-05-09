@@ -174,6 +174,15 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     // Android Studio AI: Android robot head
     $svgAndroid = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zm-2.5-2C2.67 16 2 15.33 2 14.5v-5C2 8.67 2.67 8 3.5 8S5 8.67 5 9.5v5c0 .83-.67 1.5-1.5 1.5zm17 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM12 1.5C9.33 1.5 7.02 2.89 5.72 5h12.56C16.98 2.89 14.67 1.5 12 1.5zM9.5 4c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zm5 0c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5z"/></svg>';
 
+    // Claude: organic diamond/crystal shape (Anthropic brand style)
+    $svgClaude = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L8.5 8.5 2 12l6.5 3.5L12 22l3.5-6.5L22 12l-6.5-3.5L12 2zm0 3.8l2.4 4.5 4.8 2.7-4.8 2.7L12 20.2l-2.4-4.5L4.8 13l4.8-2.7L12 5.8z"/></svg>';
+
+    // Claude Vertex / Cloud AI: hexagon network node
+    $svgCloudAI = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>';
+
+    // Claude Workspace: chat bubble with sparkle
+    $svgClaudeChat = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9l-1 2-2 1 2 1 1 2 1-2 2-1-2-1-1-2z"/></svg>';
+
     $features = [
       [$svgGemini,   'Gemini 3.1 Pro',      'Model AI paling canggih dari Google. Deep Research, percakapan multi-modal, dan analisis mendalam.','#e8f0fe','#1a73e8'],
       [$svgVideo,    'Veo 3.1 Video AI',    'Buat video sinematik berkualitas tinggi dari teks atau gambar dengan teknologi generasi terbaru.','#fce8e6','#ea4335'],
@@ -187,6 +196,10 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
       [$svgCode,     'Google Antigravity',  'Batas tarif lebih tinggi untuk model agen agentic — sempurna untuk developer.','#e8f0fe','#1a73e8'],
       [$svgDev,      'Developer Program',   'Batas lebih tinggi untuk Gemini CLI, Code Assist, Jules, dan kredit Cloud.','#e6f4ea','#34a853'],
       [$svgAndroid,  'Android Studio AI',   'Optimalkan pengembangan Android dengan Gemini terbaik langsung di IDE Anda.','#fff8e1','#f29900'],
+      // Claude benefits
+      [$svgClaude,     'Claude Sonnet & Opus', 'Akses model Claude terbaru dari Anthropic — penalaran kompleks, coding canggih, dan analisis dokumen mendalam.','#f3f0ff','#7c3aed'],
+      [$svgClaudeChat, 'Claude di Workspace',  'Claude terintegrasi langsung di Google Docs, Gmail, dan Sheets — bantu menulis, edit, dan merangkum konten dengan presisi tinggi.','#ede9fe','#6d28d9'],
+      [$svgCloudAI,    'Claude via Vertex AI', 'Jalankan Claude Haiku, Sonnet, dan Opus melalui Google Cloud Vertex AI — skalabel, aman, dan enterprise-grade.','#f5f3ff','#5b21b6'],
     ];
     foreach ($features as [$icon, $title, $desc, $bg, $color]):
     ?>

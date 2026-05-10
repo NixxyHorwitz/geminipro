@@ -24,12 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($response) {
             $res = json_decode($response, true);
             if ($res && $res['ok']) {
-                $msg = "<div style='color:#10b981;background:rgba(16,185,129,0.1);padding:10px;border-radius:8px;margin-bottom:16px'>✅ Webhook tersinkronisasi!</div>";
+                $msg = "Webhook tersinkronisasi!";
+                $msgType = 'success';
             } else {
-                $msg = "<div style='color:#ef4444;background:rgba(239,68,68,0.1);padding:10px;border-radius:8px;margin-bottom:16px'>❌ Gagal: " . htmlspecialchars($res['description'] ?? '') . "</div>";
+                $msg = "Gagal: " . htmlspecialchars($res['description'] ?? '');
+                $msgType = 'error';
             }
         } else {
-            $msg = "<div style='color:#ef4444;background:rgba(239,68,68,0.1);padding:10px;border-radius:8px;margin-bottom:16px'>❌ Gagal menghubungi API Telegram.</div>";
+            $msg = "Gagal menghubungi API Telegram.";
+            $msgType = 'error';
         }
     } else {
         $botToken = trim($_POST['bot_token'] ?? '');
@@ -48,55 +51,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (strpos($env, 'TELEGRAM_WEBHOOK_SECRET=') === false) $env .= "\nTELEGRAM_WEBHOOK_SECRET=" . $webhookSecret;
         
         file_put_contents($envFile, $env);
-        $msg = "<div style='color:#10b981;background:rgba(16,185,129,0.1);padding:10px;border-radius:8px;margin-bottom:16px'>✅ Pengaturan Bot disimpan!</div>";
+        $msg = "Pengaturan Bot disimpan!";
+        $msgType = 'success';
     }
 }
 
 require __DIR__ . '/partials/header.php';
 ?>
 
-<div class="card" style="max-width: 600px;">
-  <h2 style="margin-top:0;font-size:18px">Konfigurasi Bot Telegram</h2>
-  <p style="color:var(--c-text-sec);font-size:13px;margin-bottom:20px">
-    Bot ini berfungsi ganda sebagai notifikasi pesanan baru (Order Pending) sekaligus sebagai sistem konfirmasi manual. Admin cukup merespons pesan bot dengan mengirim ID order (misal: GAP123) untuk mengubah status menjadi Success.
-  </p>
-  
-  <?= $msg ?>
-
-  <form method="POST">
-    <div class="form-group">
-      <label>Bot Token</label>
-      <input type="text" name="bot_token" class="form-control" value="<?= htmlspecialchars($botToken) ?>" placeholder="123456789:AAHxxxxxxxxxxxxx" required>
-      <div style="font-size:11px;color:var(--c-text-hint);margin-top:4px">Dapatkan dari @BotFather di Telegram</div>
-    </div>
-    <div class="form-group">
-      <label>Admin Chat ID</label>
-      <input type="text" name="chat_id" class="form-control" value="<?= htmlspecialchars($chatId) ?>" placeholder="Contoh: 7884836068" required>
-      <div style="font-size:11px;color:var(--c-text-hint);margin-top:4px">ID chat kamu untuk menerima notifikasi.</div>
-    </div>
-    <div style="margin-top:20px;display:flex;gap:10px">
-      <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
-    </div>
-  </form>
+<div class="page-header">
+  <h1 class="page-title">Telegram Bot</h1>
+  <p class="page-sub">Konfigurasi bot notifikasi dan konfirmasi manual pesanan</p>
 </div>
 
-<?php if ($botToken): ?>
-<div class="card" style="max-width: 600px; margin-top:20px">
-  <h3 style="margin-top:0;font-size:16px;display:flex;align-items:center;gap:8px">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
-    Sinkronisasi Webhook
-  </h3>
-  <p style="color:var(--c-text-sec);font-size:13px">
-    Tekan tombol di bawah ini agar Telegram mengetahui URL Webhook kamu. URL yang akan disinkronkan adalah:<br>
-    <code style="font-size:11px;background:var(--c-bg);padding:4px;border-radius:4px;margin-top:6px;display:block;word-break:break-all">
-      <?= htmlspecialchars(rtrim($appUrl, '/') . '/webhook.php?secret=' . $webhookSecret) ?>
-    </code>
-  </p>
-  <form method="POST">
-    <input type="hidden" name="action" value="sync">
-    <button type="submit" class="btn" style="background:#10b981;color:#fff;border:none">Sync Webhook Sekarang</button>
-  </form>
+<?php if ($msg): ?>
+<div class="alert alert--<?= $msgType === 'error' ? 'error' : 'success' ?>" style="margin-bottom:20px">
+  <?= htmlspecialchars($msg) ?>
 </div>
 <?php endif; ?>
+
+<div class="two-col-grid">
+  <!-- Bot Config -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">Pengaturan Kredensial</div>
+    </div>
+    <div class="card__body">
+      <p class="form-hint" style="margin-bottom:20px; font-size:13px; color:var(--c-text-sec)">
+        Bot ini berfungsi ganda sebagai notifikasi pesanan baru (Pending) sekaligus sebagai sistem konfirmasi manual. Admin cukup membalas pesan bot dengan mengirim ID order (misal: GAP123) untuk mengubah status menjadi Success.
+      </p>
+
+      <form method="POST">
+        <div class="form-group">
+          <label class="form-label">Bot Token</label>
+          <input type="text" name="bot_token" class="form-control" value="<?= htmlspecialchars($botToken) ?>" placeholder="123456789:AAHxxxxxxxxxxxxx" required>
+          <div class="form-hint">Dapatkan dari @BotFather di aplikasi Telegram.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Admin Chat ID</label>
+          <input type="text" name="chat_id" class="form-control" value="<?= htmlspecialchars($chatId) ?>" placeholder="Contoh: 7884836068" required>
+          <div class="form-hint">ID chat pribadi Anda untuk menerima notifikasi.</div>
+        </div>
+        <button type="submit" class="btn btn--primary">Simpan Pengaturan</button>
+      </form>
+    </div>
+  </div>
+
+  <?php if ($botToken): ?>
+  <!-- Webhook Sync -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title" style="display:flex;align-items:center;gap:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        Sinkronisasi Webhook
+      </div>
+    </div>
+    <div class="card__body">
+      <p class="form-hint" style="margin-bottom:16px">
+        Tekan tombol di bawah ini agar Telegram mengetahui URL Webhook sistem Anda. URL yang akan didaftarkan adalah:
+      </p>
+      <code style="font-size:12px;background:var(--c-bg);padding:8px;border-radius:6px;display:block;word-break:break-all;border:1px solid var(--c-border);margin-bottom:20px;color:var(--c-text)">
+        <?= htmlspecialchars(rtrim($appUrl, '/') . '/webhook.php?secret=' . $webhookSecret) ?>
+      </code>
+      <form method="POST">
+        <input type="hidden" name="action" value="sync">
+        <button type="submit" class="btn" style="background:#10b981;color:#fff;border:none">Sync Webhook Sekarang</button>
+      </form>
+    </div>
+  </div>
+  <?php endif; ?>
+</div>
 
 <?php require __DIR__ . '/partials/footer.php'; ?>

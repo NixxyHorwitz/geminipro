@@ -2,7 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 
-$token  = $_ENV['TELEGRAM_BOT_TOKEN'] ?? '';
+$token  = \App\Config::env('TELEGRAM_BOT_TOKEN', '');
 
 $input = file_get_contents('php://input');
 

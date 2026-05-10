@@ -139,6 +139,8 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 .bact{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:rgba(66,133,244,.12);color:#4285F4}
 .bact.order_created{background:rgba(52,211,153,.15);color:#10b981}
 .bact.checkout_start{background:rgba(251,188,4,.15);color:#f59e0b}
+/* ApexCharts dark mode override */
+.apexcharts-tooltip{font-size:12px!important}
 </style>
 
 <div class="tf-header">
@@ -147,21 +149,20 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
     <p class="page-sub">Monitor aktivitas pengunjung &amp; order — <?= htmlspecialchars($rtitle) ?></p>
   </div>
   <div style="font-size:11px;color:var(--c-text-hint);padding:5px 11px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:8px">
-    🔴 Live · <?= date('d M Y, H:i') ?>
+    &#128308; Live &middot; <?= date('d M Y, H:i') ?>
   </div>
 </div>
 
 <!-- Range + Date Nav -->
 <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px">
   <div class="range-bar">
-    <?php $ranges=['jam'=>'24 Jam','day'=>'Hari Ini','week'=>'Minggu','month'=>'30 Hari','6month'=>'6 Bulan'];
-    foreach ($ranges as $k=>$v): ?>
+    <?php foreach (['jam'=>'24 Jam','day'=>'Hari Ini','week'=>'Minggu','month'=>'30 Hari','6month'=>'6 Bulan'] as $k=>$v): ?>
     <a href="?range=<?=$k?>&amp;action=<?=urlencode($filter)?>" class="range-btn <?=(!$useDate&&$range===$k)?'active':''?>"><?=$v?></a>
     <?php endforeach; ?>
   </div>
   <div class="date-nav">
     <?php if($useDate): ?>
-    <a href="?date=<?=$prevDate?>&amp;action=<?=urlencode($filter)?>" class="nav-btn">&#8592; Prev</a>
+    <a href="?date=<?=$prevDate?>&amp;action=<?=urlencode($filter)?>" class="nav-btn">&larr; Prev</a>
     <?php endif; ?>
     <form method="GET" style="display:inline">
       <input type="hidden" name="action" value="<?=htmlspecialchars($filter)?>">
@@ -169,10 +170,10 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
              max="<?=date('Y-m-d')?>" <?=$useDate?'style="border-color:#4285F4"':''?>>
     </form>
     <?php if($useDate && $nextDate <= date('Y-m-d')): ?>
-    <a href="?date=<?=$nextDate?>&amp;action=<?=urlencode($filter)?>" class="nav-btn">Next &#8594;</a>
+    <a href="?date=<?=$nextDate?>&amp;action=<?=urlencode($filter)?>" class="nav-btn">Next &rarr;</a>
     <?php endif; ?>
     <?php if($useDate): ?>
-    <a href="?range=day&amp;action=<?=urlencode($filter)?>" class="nav-btn" style="font-size:11px">&#10005; Reset</a>
+    <a href="?range=day&amp;action=<?=urlencode($filter)?>" class="nav-btn" style="font-size:11px">&times; Reset</a>
     <?php endif; ?>
   </div>
 </div>
@@ -199,18 +200,16 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
     <div class="mc__sub">Paling ramai hari ini</div></div>
 </div>
 
-<!-- Combined Chart -->
+<!-- Combined Chart (ApexCharts) -->
 <div class="chart-card">
   <div class="chart-card__hd">
-    <div class="chart-card__ttl">&#128202; Traffic vs Orders &#8212; <?=htmlspecialchars($rtitle)?></div>
+    <div class="chart-card__ttl">&#128202; Traffic vs Orders &mdash; <?=htmlspecialchars($rtitle)?></div>
     <div class="legend">
       <span><i style="background:#4285F4"></i>Traffic Hits</span>
       <span><i style="background:#34A853"></i>Orders</span>
     </div>
   </div>
-  <div style="position:relative;height:300px">
-    <canvas id="mainChart"></canvas>
-  </div>
+  <div id="apx-chart"></div>
 </div>
 
 <!-- Top Pages + Top IPs -->
@@ -280,11 +279,11 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
   <a href="?range=<?=$range?>&amp;date=<?=urlencode($dateStr)?>&amp;action=<?=urlencode($filter)?>&amp;page=<?=$p?>"
      class="page-link <?=$p===$page?'active':''?>"><?=$p?></a>
   <?php endfor; ?>
-  <?php if($totalPages>12): ?><span style="color:var(--c-text-hint);padding:0 8px">&#8230;<?=$totalPages?></span><?php endif; ?>
+  <?php if($totalPages>12): ?><span style="color:var(--c-text-hint);padding:0 8px">&hellip;<?=$totalPages?> halaman</span><?php endif; ?>
 </div>
 <?php endif; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js"></script>
 <script>
 (function() {
   var tRaw = <?= json_encode($trafficChart) ?>;
@@ -311,79 +310,55 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
     oArr = labels.map(function(l){ return om[l] || 0; });
   }
 
-  var canvas = document.getElementById('mainChart');
-  new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: 'Traffic Hits',
-          data: tArr,
-          borderColor: '#4285F4',
-          backgroundColor: 'rgba(66,133,244,0.15)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 7,
-          pointBackgroundColor: '#4285F4',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          borderWidth: 2.5
-        },
-        {
-          label: 'Orders',
-          data: oArr,
-          borderColor: '#34A853',
-          backgroundColor: 'rgba(52,168,83,0.12)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 7,
-          pointBackgroundColor: '#34A853',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          borderWidth: 2.5,
-          yAxisID: 'y2'
-        }
-      ]
+  new ApexCharts(document.getElementById('apx-chart'), {
+    series: [
+      { name: 'Traffic Hits', type: 'area', data: tArr },
+      { name: 'Orders',       type: 'line', data: oArr }
+    ],
+    chart: {
+      height: 320,
+      type: 'line',
+      background: 'transparent',
+      toolbar: { show: false },
+      zoom:    { enabled: false },
+      animations: { enabled: true, speed: 500 }
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: 'rgba(15,15,25,0.92)',
-          titleColor: '#e0e0e0',
-          bodyColor: '#aaa',
-          borderColor: 'rgba(255,255,255,0.08)',
-          borderWidth: 1,
-          padding: 12,
-          cornerRadius: 10
-        }
-      },
-      scales: {
-        x: {
-          grid: { color: 'rgba(128,128,128,0.08)' },
-          ticks: { color: '#6b7280', font: { size: 11 }, maxTicksLimit: 12, maxRotation: 30 }
-        },
-        y: {
-          beginAtZero: true,
-          position: 'left',
-          grid: { color: 'rgba(128,128,128,0.06)' },
-          ticks: { color: '#4285F4', font: { size: 11 }, precision: 0 }
-        },
-        y2: {
-          beginAtZero: true,
-          position: 'right',
-          grid: { drawOnChartArea: false },
-          ticks: { color: '#34A853', font: { size: 11 }, precision: 0 }
-        }
+    colors: ['#4285F4', '#34A853'],
+    fill: {
+      type: ['gradient', 'solid'],
+      gradient: {
+        type: 'vertical',
+        shadeIntensity: 1,
+        opacityFrom: 0.35,
+        opacityTo:   0.02,
+        stops: [0, 100]
       }
-    }
-  });
+    },
+    stroke:  { curve: 'smooth', width: [2.5, 2.5] },
+    markers: { size: 4, hover: { size: 7 }, strokeWidth: 2, strokeColors: '#fff' },
+    xaxis: {
+      categories: labels,
+      labels:     { style: { colors: '#6b7280', fontSize: '11px' } },
+      axisBorder: { show: false },
+      axisTicks:  { show: false }
+    },
+    yaxis: [
+      {
+        title:  { text: 'Hits',   style: { color: '#4285F4', fontSize: '11px' } },
+        labels: { style: { colors: '#4285F4', fontSize: '11px' } },
+        min: 0
+      },
+      {
+        opposite: true,
+        title:    { text: 'Orders', style: { color: '#34A853', fontSize: '11px' } },
+        labels:   { style: { colors: '#34A853', fontSize: '11px' } },
+        min: 0
+      }
+    ],
+    grid:    { borderColor: 'rgba(128,128,128,0.1)', strokeDashArray: 4 },
+    tooltip: { shared: true, intersect: false, theme: 'dark', style: { fontSize: '12px' } },
+    legend:  { show: false }
+  }).render();
 })();
 </script>
 

@@ -209,8 +209,28 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
       <span><i style="background:#34A853"></i>Orders</span>
     </div>
   </div>
-  <div id="apx-chart"></div>
+  <div id="apx-chart" style="min-height:50px"></div>
+  <div id="chart-error" style="display:none;padding:12px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;font-size:12px;color:#856404;margin-top:8px"></div>
 </div>
+
+<!-- DEBUG PANEL -->
+<details style="margin-bottom:14px;border:1px dashed #f29900;border-radius:8px;padding:12px;background:#fffdf0;font-size:12px">
+  <summary style="cursor:pointer;font-weight:600;color:#f29900">&#128736; Debug Info (klik untuk buka)</summary>
+  <div style="margin-top:10px">
+    <b>chartMode:</b> <?=htmlspecialchars($chartMode)?> &nbsp;|&nbsp;
+    <b>range:</b> <?=htmlspecialchars($range)?> &nbsp;|&nbsp;
+    <b>useDate:</b> <?=$useDate?'true':'false'?><br><br>
+    <b>trafficChart rows:</b> <?=count($trafficChart)?><br>
+    <pre style="font-size:11px;overflow:auto;max-height:120px;background:#f5f5f5;padding:8px;border-radius:4px"><?=htmlspecialchars(json_encode($trafficChart, JSON_PRETTY_PRINT))?></pre>
+    <b>ordersChart rows:</b> <?=count($ordersChart)?><br>
+    <pre style="font-size:11px;overflow:auto;max-height:80px;background:#f5f5f5;padding:8px;border-radius:4px"><?=htmlspecialchars(json_encode($ordersChart, JSON_PRETTY_PRINT))?></pre>
+    <b>PHP Exception:</b> <?php
+      try { $pdo->query('SELECT 1'); echo '<span style="color:green">DB OK</span>'; }
+      catch(\Exception $ex) { echo '<span style="color:red">'.htmlspecialchars($ex->getMessage()).'</span>'; }
+    ?><br>
+    <div id="dbg-js" style="margin-top:8px">&#8987; JS belum dieksekusi...</div>
+  </div>
+</details>
 
 <!-- Top Pages + Top IPs -->
 <div class="two-col">
@@ -283,12 +303,33 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 </div>
 <?php endif; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js"
+  onerror="document.getElementById('chart-error').style.display='block';document.getElementById('chart-error').innerText='GAGAL LOAD ApexCharts CDN. Cek koneksi internet / CSP header.'">
+</script>
 <script>
 (function() {
-  var tRaw = <?= json_encode($trafficChart) ?>;
-  var oRaw = <?= json_encode($ordersChart) ?>;
-  var mode = <?= json_encode($chartMode) ?>;
+  var dbg = document.getElementById('dbg-js');
+  var errBox = document.getElementById('chart-error');
+  function showErr(msg) {
+    if(errBox){ errBox.style.display='block'; errBox.innerText = msg; }
+    console.error('[CHART]', msg);
+  }
+
+  dbg && (dbg.innerText = 'JS running...');
+
+  try {
+    if (typeof ApexCharts === 'undefined') {
+      showErr('ApexCharts tidak ter-load. Pastikan CDN dapat diakses.');
+      dbg && (dbg.innerText = 'ERROR: ApexCharts undefined');
+      return;
+    }
+
+    var tRaw = <?= json_encode($trafficChart) ?>;
+    var oRaw = <?= json_encode($ordersChart) ?>;
+    var mode = <?= json_encode($chartMode) ?>;
+
+    dbg && (dbg.innerText = 'mode=' + mode + ' | tRaw=' + tRaw.length + ' rows | oRaw=' + oRaw.length + ' rows | ApexCharts=OK');
+    console.log('[CHART] mode:', mode, '| tRaw:', tRaw, '| oRaw:', oRaw);
 
   var labels, tArr, oArr;
   if (mode === 'hourly') {
@@ -359,6 +400,10 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
     tooltip: { shared: true, intersect: false, theme: 'dark', style: { fontSize: '12px' } },
     legend:  { show: false }
   }).render();
+  } catch (e) {
+    showErr('JS Error: ' + e.message);
+    dbg && (dbg.innerText = 'JS Error: ' + e.message);
+  }
 })();
 </script>
 

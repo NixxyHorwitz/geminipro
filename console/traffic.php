@@ -210,7 +210,9 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
       <span><i style="background:#34A853"></i>Orders</span>
     </div>
   </div>
-  <canvas id="mainChart" height="95"></canvas>
+  <div style="position:relative;height:300px">
+    <canvas id="mainChart"></canvas>
+  </div>
 </div>
 
 <!-- Top Pages + Top IPs -->
@@ -287,14 +289,15 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 const tRaw = <?=json_encode($trafficChart)?>;
-const oRaw = <?=json_encode($ordersChart)?>;
+const oRaw  = <?=json_encode($ordersChart)?>;
 const mode = <?=json_encode($chartMode)?>;
 
-// Build labels & map data
+// Build labels
 let labels, tArr, oArr;
 if (mode === 'hourly') {
   labels = Array.from({length:24},(_,i)=>String(i).padStart(2,'0')+':00');
-  tArr = Array(24).fill(0); oArr = Array(24).fill(0);
+  tArr = Array(24).fill(0);
+  oArr = Array(24).fill(0);
   tRaw.forEach(r=>{ tArr[parseInt(r.lbl)] = parseInt(r.cnt); });
   oRaw.forEach(r=>{ oArr[parseInt(r.lbl)] = parseInt(r.cnt); });
 } else {
@@ -302,35 +305,49 @@ if (mode === 'hourly') {
   tRaw.forEach(r=>keys.add(String(r.lbl)));
   oRaw.forEach(r=>keys.add(String(r.lbl)));
   labels = Array.from(keys).sort();
-  const tm={},om={};
-  tRaw.forEach(r=>{tm[String(r.lbl)]=parseInt(r.cnt)});
-  oRaw.forEach(r=>{om[String(r.lbl)]=parseInt(r.cnt)});
-  tArr = labels.map(l=>tm[l]??0);
-  oArr = labels.map(l=>om[l]??0);
+  const tm={}, om={};
+  tRaw.forEach(r=>{ tm[String(r.lbl)]=parseInt(r.cnt); });
+  oRaw.forEach(r=>{ om[String(r.lbl)]=parseInt(r.cnt); });
+  tArr = labels.map(l=>tm[l]||0);
+  oArr = labels.map(l=>om[l]||0);
 }
 
-const canvas = document.getElementById('mainChart');
-const ctx = canvas.getContext('2d');
-const gBlue  = ctx.createLinearGradient(0,0,0,280);
-gBlue.addColorStop(0,'rgba(66,133,244,0.3)'); gBlue.addColorStop(1,'rgba(66,133,244,0)');
-const gGreen = ctx.createLinearGradient(0,0,0,280);
-gGreen.addColorStop(0,'rgba(52,168,83,0.25)'); gGreen.addColorStop(1,'rgba(52,168,83,0)');
+// Gradient plugin - creates gradient AFTER canvas sized
+const gradientPlugin = {
+  id:'gradients',
+  beforeDatasetsDraw(chart){
+    if(chart._gradientsSet) return;
+    chart._gradientsSet = true;
+    const {ctx, chartArea:{top,bottom}} = chart;
+    const h = bottom - top;
+    const gB = ctx.createLinearGradient(0,top,0,top+h);
+    gB.addColorStop(0,'rgba(66,133,244,0.35)'); gB.addColorStop(1,'rgba(66,133,244,0.02)');
+    const gG = ctx.createLinearGradient(0,top,0,top+h);
+    gG.addColorStop(0,'rgba(52,168,83,0.28)'); gG.addColorStop(1,'rgba(52,168,83,0.02)');
+    chart.data.datasets[0].backgroundColor = gB;
+    chart.data.datasets[1].backgroundColor = gG;
+    chart.update('none');
+  }
+};
 
-new Chart(ctx, {
+const canvas = document.getElementById('mainChart');
+new Chart(canvas, {
   type:'line',
+  plugins:[gradientPlugin],
   data:{
     labels,
     datasets:[
-      {label:'Traffic Hits',data:tArr,borderColor:'#4285F4',backgroundColor:gBlue,fill:true,tension:0.42,
-       pointRadius:labels.length<=24?4:2,pointHoverRadius:7,pointBackgroundColor:'#4285F4',
-       pointBorderColor:'#fff',pointBorderWidth:2,borderWidth:2.5,yAxisID:'yT'},
-      {label:'Orders',data:oArr,borderColor:'#34A853',backgroundColor:gGreen,fill:true,tension:0.42,
-       pointRadius:labels.length<=24?4:2,pointHoverRadius:7,pointBackgroundColor:'#34A853',
-       pointBorderColor:'#fff',pointBorderWidth:2,borderWidth:2.5,yAxisID:'yO'}
+      {label:'Traffic Hits',data:tArr,borderColor:'#4285F4',backgroundColor:'rgba(66,133,244,0.2)',
+       fill:true,tension:0.42,pointRadius:labels.length<=24?4:2,pointHoverRadius:7,
+       pointBackgroundColor:'#4285F4',pointBorderColor:'#fff',pointBorderWidth:2,borderWidth:2.5,yAxisID:'yT'},
+      {label:'Orders',data:oArr,borderColor:'#34A853',backgroundColor:'rgba(52,168,83,0.15)',
+       fill:true,tension:0.42,pointRadius:labels.length<=24?4:2,pointHoverRadius:7,
+       pointBackgroundColor:'#34A853',pointBorderColor:'#fff',pointBorderWidth:2,borderWidth:2.5,yAxisID:'yO'}
     ]
   },
   options:{
     responsive:true,
+    maintainAspectRatio:false,
     interaction:{mode:'index',intersect:false},
     plugins:{
       legend:{display:false},
@@ -344,7 +361,8 @@ new Chart(ctx, {
       }
     },
     scales:{
-      x:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{color:'#6b7280',font:{size:11},maxTicksLimit:mode==='6month'?6:12,maxRotation:30}},
+      x:{grid:{color:'rgba(128,128,128,0.1)'},
+         ticks:{color:'#6b7280',font:{size:11},maxTicksLimit:mode==='6month'?6:12,maxRotation:30}},
       yT:{position:'left',beginAtZero:true,grid:{color:'rgba(128,128,128,0.08)'},
           ticks:{color:'#4285F4',font:{size:11},precision:0},
           title:{display:true,text:'Hits',color:'#4285F4',font:{size:11}}},

@@ -152,12 +152,14 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
       <label class="clg-item"><input type="checkbox" value="Revenue (Rp)" checked> <span class="clg-box" style="background:#f59e0b"></span> Revenue (Rp)</label>
   </div>
   
-  <div id="apx-chart" style="min-height:300px"></div>
+  <div style="position:relative; height:320px; width:100%">
+    <canvas id="apx-chart"></canvas>
+  </div>
   <div id="chart-error" style="display:none;padding:12px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;font-size:12px;color:#856404;margin-top:8px"></div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.49.0/apexcharts.min.js" 
-  onerror="document.getElementById('chart-error').style.display='block';document.getElementById('chart-error').innerText='GAGAL LOAD ApexCharts CDN. Cek koneksi internet.'"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" 
+  onerror="document.getElementById('chart-error').style.display='block';document.getElementById('chart-error').innerText='GAGAL LOAD Chart.js CDN. Cek koneksi internet.'"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -204,116 +206,110 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    var savedType = localStorage.getItem('analyticsChartType') || 'area';
+    var validTypes = ['area', 'bar', 'line', 'stepline'];
+    var savedType = localStorage.getItem('analyticsChartType');
+    if (!validTypes.includes(savedType)) savedType = 'area'; // Default fallback aman
+    
     var toggle = document.getElementById('chartTypeToggle');
     if (toggle) toggle.value = savedType;
 
-    var initStyle = (function(t) {
-        var isArea = t === 'area';
-        var isBar = t === 'bar';
-        var isLine = t === 'line';
-        var isStep = t === 'stepline';
-        return {
-            type: isStep ? 'line' : t,
-            strokeCurve: isStep ? 'stepline' : (isArea || isLine ? 'smooth' : 'straight'),
-            strokeWidth: isBar ? [0,0,0] : [3,3,3],
-            fillType: isArea ? 'gradient' : 'solid',
-            fillOp: isBar ? 0.9 : 1
+    function getDatasetOptions(type, baseColor, label, data, yAxisID) {
+        var isArea = type === 'area';
+        var isBar = type === 'bar';
+        var isLine = type === 'line';
+        var isStep = type === 'stepline';
+        
+        var hexToRgba = function(hex, alpha) {
+            var r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
+            return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
         };
-    })(savedType);
 
-    var chartOptions = {
-      series: [
-        { name: 'Traffic Hits', type: initStyle.type, data: tArr },
-        { name: 'Transaksi', type: initStyle.type, data: oArr },
-        { name: 'Revenue (Rp)', type: initStyle.type, data: rArr }
-      ],
-      chart: {
-        height: 320, type: initStyle.type, background: 'transparent', toolbar: { show: false }, zoom: { enabled: false }, animations: { enabled: true, speed: 600 }
-      },
-      colors: ['#4285F4', '#10b981', '#f59e0b'],
-      fill: {
-        type: initStyle.fillType,
-        gradient: savedType === 'area' ? { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 100] } : undefined,
-        opacity: initStyle.fillOp
-      },
-      dataLabels: { enabled: false },
-      stroke: { curve: initStyle.strokeCurve, width: initStyle.strokeWidth },
-      markers: { size: 0, hover: { size: 6 } },
-      xaxis: {
-        categories: labels,
-        labels: { style: { colors: '#6b7280', fontSize: '11px' } },
-        axisBorder: { show: false }, axisTicks: { show: false }, tooltip: { enabled: false }
-      },
-      yaxis: [
-        {
-          seriesName: 'Traffic Hits',
-          title: { text: 'Hits Trafik', style: { color: '#4285F4', fontSize: '11px', fontWeight: 600 } },
-          labels: { style: { colors: '#4285F4', fontSize: '11px' } },
-          min: 0, forceNiceScale: true
-        },
-        {
-          seriesName: 'Transaksi',
-          opposite: true,
-          title: { text: 'Transaksi', style: { color: '#10b981', fontSize: '11px', fontWeight: 600 } },
-          labels: { style: { colors: '#10b981', fontSize: '11px' } },
-          min: 0, forceNiceScale: true
-        },
-        {
-          seriesName: 'Revenue (Rp)',
-          opposite: true,
-          title: { text: 'Revenue (Rp)', style: { color: '#f59e0b', fontSize: '11px', fontWeight: 600 } },
-          labels: { style: { colors: '#f59e0b', fontSize: '11px' }, formatter: function(v){ return v>=1000 ? 'Rp '+(v/1000).toFixed(0)+'k' : 'Rp '+v; } },
-          min: 0, forceNiceScale: true
-        }
-      ],
-      grid: { borderColor: 'rgba(128,128,128,0.1)', strokeDashArray: 4 },
-      tooltip: { shared: true, intersect: false, theme: 'light', style: { fontSize: '12px' }, y: { formatter: function(val, { seriesIndex }) { return seriesIndex === 2 ? 'Rp ' + val.toLocaleString() : val; } } },
-      legend: { show: false }
-    };
-
-    var chartEl = document.getElementById('apx-chart');
-    if (chartEl) {
-      var chart = new ApexCharts(chartEl, chartOptions);
-      chart.render();
-      
-      if (toggle) {
-          toggle.addEventListener('change', function() {
-              var t = this.value;
-              localStorage.setItem('analyticsChartType', t);
-              
-              var isArea = t === 'area';
-              var isBar = t === 'bar';
-              var isLine = t === 'line';
-              var isStep = t === 'stepline';
-              var actualType = isStep ? 'line' : t;
-              
-              chart.updateOptions({
-                  chart: { type: actualType },
-                  stroke: { curve: isStep ? 'stepline' : (isArea || isLine ? 'smooth' : 'straight'), width: isBar ? [0,0,0] : [3,3,3] },
-                  fill: {
-                      type: isArea ? 'gradient' : 'solid',
-                      gradient: isArea ? { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0,100] } : undefined,
-                      opacity: isBar ? 0.9 : 1
-                  }
-              });
-              
-              chart.updateSeries([
-                  { name: 'Traffic Hits', type: actualType, data: tArr },
-                  { name: 'Transaksi', type: actualType, data: oArr },
-                  { name: 'Revenue (Rp)', type: actualType, data: rArr }
-              ]);
-          });
-      }
-      
-      // Custom Legend Checkbox Toggle
-      var legendChecks = document.querySelectorAll('#chartLegend input[type="checkbox"]');
-      legendChecks.forEach(function(chk) {
-          chk.addEventListener('change', function() {
-              chart.toggleSeries(this.value);
-          });
-      });
+        return {
+            label: label,
+            data: data,
+            type: isBar ? 'bar' : 'line',
+            yAxisID: yAxisID,
+            borderColor: baseColor,
+            backgroundColor: isBar ? hexToRgba(baseColor, 0.85) : hexToRgba(baseColor, 0.15),
+            borderWidth: isBar ? 0 : 3,
+            fill: isArea,
+            tension: (isArea || isLine) ? 0.4 : 0,
+            stepped: isStep,
+            pointRadius: 0,
+            pointHoverRadius: 6
+        };
     }
+
+    var ctx = document.getElementById('apx-chart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        data: {
+            labels: labels,
+            datasets: [
+                getDatasetOptions(savedType, '#4285F4', 'Traffic Hits', tArr, 'yTraffic'),
+                getDatasetOptions(savedType, '#10b981', 'Transaksi', oArr, 'yTrans'),
+                getDatasetOptions(savedType, '#f59e0b', 'Revenue (Rp)', rArr, 'yRev')
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var val = context.raw;
+                            if (context.dataset.yAxisID === 'yRev') {
+                                return context.dataset.label + ': Rp ' + val.toLocaleString();
+                            }
+                            return context.dataset.label + ': ' + val;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false } },
+                yTraffic: {
+                    type: 'linear', display: true, position: 'left',
+                    title: { display: true, text: 'Hits Trafik', color: '#4285F4', font: {weight: 'bold'} },
+                    ticks: { color: '#4285F4' }, grid: { borderDash: [4, 4], color: 'rgba(0,0,0,0.05)' }
+                },
+                yTrans: {
+                    type: 'linear', display: true, position: 'right',
+                    title: { display: true, text: 'Transaksi', color: '#10b981', font: {weight: 'bold'} },
+                    ticks: { color: '#10b981' }, grid: { display: false }
+                },
+                yRev: {
+                    type: 'linear', display: true, position: 'right',
+                    title: { display: true, text: 'Revenue (Rp)', color: '#f59e0b', font: {weight: 'bold'} },
+                    ticks: { color: '#f59e0b', callback: function(val) { return val >= 1000 ? 'Rp ' + (val/1000).toFixed(0) + 'k' : 'Rp ' + val; } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    if (toggle) {
+        toggle.addEventListener('change', function() {
+            var t = this.value;
+            localStorage.setItem('analyticsChartType', t);
+            
+            myChart.data.datasets[0] = getDatasetOptions(t, '#4285F4', 'Traffic Hits', tArr, 'yTraffic');
+            myChart.data.datasets[1] = getDatasetOptions(t, '#10b981', 'Transaksi', oArr, 'yTrans');
+            myChart.data.datasets[2] = getDatasetOptions(t, '#f59e0b', 'Revenue (Rp)', rArr, 'yRev');
+            myChart.update();
+        });
+    }
+
+    var legendChecks = document.querySelectorAll('#chartLegend input[type="checkbox"]');
+    legendChecks.forEach(function(chk, idx) {
+        chk.addEventListener('change', function() {
+            var meta = myChart.getDatasetMeta(idx);
+            meta.hidden = !this.checked;
+            myChart.update();
+        });
+    });
   } catch (ex) {
     if(errBox){ errBox.style.display='block'; errBox.innerText = 'JS Error: ' + ex.message; }
     console.error(ex);

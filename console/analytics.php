@@ -108,6 +108,8 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
     <select id="chartTypeToggle" style="padding:5px 12px;border-radius:20px;border:1.5px solid var(--c-border);font-size:12px;background:var(--c-surface);color:var(--c-text);outline:none;cursor:pointer">
         <option value="area">Grafik Gelombang</option>
         <option value="bar">Grafik Batang</option>
+        <option value="line">Grafik Garis Klasik</option>
+        <option value="scatter">Grafik Titik Scatter</option>
     </select>
   </div>
 </div>
@@ -187,14 +189,31 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
+    var savedType = localStorage.getItem('analyticsChartType') || 'area';
+    var toggle = document.getElementById('chartTypeToggle');
+    if (toggle) toggle.value = savedType;
+
+    var initStyle = (function(t) {
+        var isArea = t === 'area';
+        var isBar = t === 'bar';
+        var isScatter = t === 'scatter';
+        return {
+            strokeCurve: isArea ? 'smooth' : 'straight',
+            strokeWidth: (isBar || isScatter) ? [0,0] : [3,3],
+            fillType: isArea ? 'gradient' : 'solid',
+            fillOp: isBar ? 0.9 : 1,
+            markerSize: isScatter ? 5 : 0
+        };
+    })(savedType);
+
     var chartOptions = {
       series: [
-        { name: 'Traffic Hits', type: 'area', data: tArr },
-        { name: 'Transaksi', type: 'area', data: oArr }
+        { name: 'Traffic Hits', type: savedType, data: tArr },
+        { name: 'Transaksi', type: savedType, data: oArr }
       ],
       chart: {
         height: 320,
-        type: 'area', // grafik gelombang trading
+        type: savedType,
         background: 'transparent',
         toolbar: { show: false },
         zoom: { enabled: false },
@@ -202,17 +221,13 @@ document.addEventListener("DOMContentLoaded", function() {
       },
       colors: ['#4285F4', '#10b981'],
       fill: {
-        type: 'gradient',
-        gradient: {
-          shadeIntensity: 1,
-          opacityFrom: 0.4,
-          opacityTo: 0.05,
-          stops: [0, 100]
-        }
+        type: initStyle.fillType,
+        gradient: savedType === 'area' ? { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 100] } : undefined,
+        opacity: initStyle.fillOp
       },
       dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: [3, 3] }, // curve smooth = gelombang
-      markers: { size: 0, hover: { size: 6 } }, // bersih tanpa titik kecuali dihover
+      stroke: { curve: initStyle.strokeCurve, width: initStyle.strokeWidth },
+      markers: { size: initStyle.markerSize, hover: { size: 6 } },
       xaxis: {
         categories: labels,
         labels: { style: { colors: '#6b7280', fontSize: '11px' } },
@@ -245,20 +260,26 @@ document.addEventListener("DOMContentLoaded", function() {
       var chart = new ApexCharts(chartEl, chartOptions);
       chart.render();
       
-      var toggle = document.getElementById('chartTypeToggle');
       if (toggle) {
           toggle.addEventListener('change', function() {
-              var t = this.value; // 'area' atau 'bar'
+              var t = this.value;
+              localStorage.setItem('analyticsChartType', t);
+              
+              var isArea = t === 'area';
+              var isBar = t === 'bar';
+              var isScatter = t === 'scatter';
+              
               chart.updateOptions({
                   chart: { type: t },
-                  stroke: { curve: t === 'area' ? 'smooth' : 'straight', width: t === 'area' ? [3,3] : [0,0] },
+                  stroke: { curve: isArea ? 'smooth' : 'straight', width: (isBar || isScatter) ? [0,0] : [3,3] },
                   fill: {
-                      type: t === 'area' ? 'gradient' : 'solid',
-                      gradient: t === 'area' ? { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0,100] } : undefined,
-                      opacity: t === 'area' ? undefined : 0.9
-                  }
+                      type: isArea ? 'gradient' : 'solid',
+                      gradient: isArea ? { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0,100] } : undefined,
+                      opacity: isBar ? 0.9 : 1
+                  },
+                  markers: { size: isScatter ? 5 : 0 }
               });
-              // Update series type (ApexCharts mixed charts needs series type updated too)
+              
               chart.updateSeries([
                   { name: 'Traffic Hits', type: t, data: tArr },
                   { name: 'Transaksi', type: t, data: oArr }

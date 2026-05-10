@@ -303,11 +303,9 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 </div>
 <?php endif; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js"
-  onerror="document.getElementById('chart-error').style.display='block';document.getElementById('chart-error').innerText='GAGAL LOAD ApexCharts CDN. Cek koneksi internet / CSP header.'">
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.49.0/apexcharts.min.js"></script>
 <script>
-(function() {
+document.addEventListener("DOMContentLoaded", function() {
   var dbg = document.getElementById('dbg-js');
   var errBox = document.getElementById('chart-error');
   function showErr(msg) {
@@ -315,96 +313,109 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
     console.error('[CHART]', msg);
   }
 
-  dbg && (dbg.innerText = 'JS running...');
+  if (dbg) dbg.innerText = 'Mencoba load chart...';
+
+  // Fallback if ApexCharts failed to load from CDN
+  if (typeof ApexCharts === 'undefined') {
+    showErr('ApexCharts gagal di-load dari CDN. Pastikan internet aktif dan tidak memblokir cdnjs.');
+    if (dbg) dbg.innerText = 'ERROR: ApexCharts undefined (CDN diblokir / timeout)';
+    return;
+  }
 
   try {
-    if (typeof ApexCharts === 'undefined') {
-      showErr('ApexCharts tidak ter-load. Pastikan CDN dapat diakses.');
-      dbg && (dbg.innerText = 'ERROR: ApexCharts undefined');
-      return;
-    }
-
     var tRaw = <?= json_encode($trafficChart) ?>;
     var oRaw = <?= json_encode($ordersChart) ?>;
     var mode = <?= json_encode($chartMode) ?>;
 
-    dbg && (dbg.innerText = 'mode=' + mode + ' | tRaw=' + tRaw.length + ' rows | oRaw=' + oRaw.length + ' rows | ApexCharts=OK');
-    console.log('[CHART] mode:', mode, '| tRaw:', tRaw, '| oRaw:', oRaw);
+    if (dbg) dbg.innerText = 'mode=' + mode + ' | tRaw=' + (tRaw?tRaw.length:0) + ' | oRaw=' + (oRaw?oRaw.length:0) + ' | ApexCharts=OK';
 
-  var labels, tArr, oArr;
-  if (mode === 'hourly') {
-    labels = [];
-    for (var i = 0; i < 24; i++) { labels.push((i < 10 ? '0' : '') + i + ':00'); }
-    tArr = new Array(24).fill(0);
-    oArr = new Array(24).fill(0);
-    for (var j = 0; j < tRaw.length; j++) { tArr[parseInt(tRaw[j].lbl)] = parseInt(tRaw[j].cnt); }
-    for (var k = 0; k < oRaw.length; k++) { oArr[parseInt(oRaw[k].lbl)] = parseInt(oRaw[k].cnt); }
-  } else {
-    var keySet = {};
-    for (var a = 0; a < tRaw.length; a++) { keySet[String(tRaw[a].lbl)] = 1; }
-    for (var b = 0; b < oRaw.length; b++) { keySet[String(oRaw[b].lbl)] = 1; }
-    labels = Object.keys(keySet).sort();
-    var tm = {}, om = {};
-    for (var c = 0; c < tRaw.length; c++) { tm[String(tRaw[c].lbl)] = parseInt(tRaw[c].cnt); }
-    for (var d = 0; d < oRaw.length; d++) { om[String(oRaw[d].lbl)] = parseInt(oRaw[d].cnt); }
-    tArr = labels.map(function(l){ return tm[l] || 0; });
-    oArr = labels.map(function(l){ return om[l] || 0; });
-  }
-
-  new ApexCharts(document.getElementById('apx-chart'), {
-    series: [
-      { name: 'Traffic Hits', type: 'area', data: tArr },
-      { name: 'Orders',       type: 'line', data: oArr }
-    ],
-    chart: {
-      height: 320,
-      type: 'line',
-      background: 'transparent',
-      toolbar: { show: false },
-      zoom:    { enabled: false },
-      animations: { enabled: true, speed: 500 }
-    },
-    colors: ['#4285F4', '#34A853'],
-    fill: {
-      type: ['gradient', 'solid'],
-      gradient: {
-        type: 'vertical',
-        shadeIntensity: 1,
-        opacityFrom: 0.35,
-        opacityTo:   0.02,
-        stops: [0, 100]
+    var labels = [], tArr = [], oArr = [];
+    if (mode === 'hourly') {
+      for (var i = 0; i < 24; i++) { labels.push((i < 10 ? '0' : '') + i + ':00'); }
+      tArr = new Array(24).fill(0);
+      oArr = new Array(24).fill(0);
+      for (var j = 0; j < tRaw.length; j++) { tArr[parseInt(tRaw[j].lbl, 10)] = parseInt(tRaw[j].cnt, 10); }
+      for (var k = 0; k < oRaw.length; k++) { oArr[parseInt(oRaw[k].lbl, 10)] = parseInt(oRaw[k].cnt, 10); }
+    } else {
+      var keySet = {};
+      for (var a = 0; a < tRaw.length; a++) { keySet[String(tRaw[a].lbl)] = 1; }
+      for (var b = 0; b < oRaw.length; b++) { keySet[String(oRaw[b].lbl)] = 1; }
+      labels = Object.keys(keySet).sort();
+      var tm = {}, om = {};
+      for (var c = 0; c < tRaw.length; c++) { tm[String(tRaw[c].lbl)] = parseInt(tRaw[c].cnt, 10); }
+      for (var d = 0; d < oRaw.length; d++) { om[String(oRaw[d].lbl)] = parseInt(oRaw[d].cnt, 10); }
+      
+      // Gunakan loop biasa agar kompatibel di semua browser (hindari map/arrow functions jika error)
+      for (var e = 0; e < labels.length; e++) {
+        var lb = labels[e];
+        tArr.push(tm[lb] || 0);
+        oArr.push(om[lb] || 0);
       }
-    },
-    stroke:  { curve: 'smooth', width: [2.5, 2.5] },
-    markers: { size: 4, hover: { size: 7 }, strokeWidth: 2, strokeColors: '#fff' },
-    xaxis: {
-      categories: labels,
-      labels:     { style: { colors: '#6b7280', fontSize: '11px' } },
-      axisBorder: { show: false },
-      axisTicks:  { show: false }
-    },
-    yaxis: [
-      {
-        title:  { text: 'Hits',   style: { color: '#4285F4', fontSize: '11px' } },
-        labels: { style: { colors: '#4285F4', fontSize: '11px' } },
-        min: 0
+    }
+
+    var chartOptions = {
+      series: [
+        { name: 'Traffic Hits', type: 'area', data: tArr },
+        { name: 'Orders',       type: 'line', data: oArr }
+      ],
+      chart: {
+        height: 320,
+        type: 'line',
+        background: 'transparent',
+        toolbar: { show: false },
+        zoom:    { enabled: false },
+        animations: { enabled: true, speed: 500 }
       },
-      {
-        opposite: true,
-        title:    { text: 'Orders', style: { color: '#34A853', fontSize: '11px' } },
-        labels:   { style: { colors: '#34A853', fontSize: '11px' } },
-        min: 0
-      }
-    ],
-    grid:    { borderColor: 'rgba(128,128,128,0.1)', strokeDashArray: 4 },
-    tooltip: { shared: true, intersect: false, theme: 'dark', style: { fontSize: '12px' } },
-    legend:  { show: false }
-  }).render();
-  } catch (e) {
-    showErr('JS Error: ' + e.message);
-    dbg && (dbg.innerText = 'JS Error: ' + e.message);
+      colors: ['#4285F4', '#34A853'],
+      fill: {
+        type: ['gradient', 'solid'],
+        gradient: {
+          type: 'vertical',
+          shadeIntensity: 1,
+          opacityFrom: 0.35,
+          opacityTo:   0.02,
+          stops: [0, 100]
+        }
+      },
+      stroke:  { curve: 'smooth', width: [2.5, 2.5] },
+      markers: { size: 4, hover: { size: 7 }, strokeWidth: 2, strokeColors: '#fff' },
+      xaxis: {
+        categories: labels,
+        labels:     { style: { colors: '#6b7280', fontSize: '11px' } },
+        axisBorder: { show: false },
+        axisTicks:  { show: false }
+      },
+      yaxis: [
+        {
+          title:  { text: 'Hits',   style: { color: '#4285F4', fontSize: '11px', fontWeight: 600 } },
+          labels: { style: { colors: '#4285F4', fontSize: '11px', fontWeight: 600 } },
+          min: 0
+        },
+        {
+          opposite: true,
+          title:    { text: 'Orders', style: { color: '#34A853', fontSize: '11px', fontWeight: 600 } },
+          labels:   { style: { colors: '#34A853', fontSize: '11px', fontWeight: 600 } },
+          min: 0
+        }
+      ],
+      grid:    { borderColor: 'rgba(128,128,128,0.1)', strokeDashArray: 4 },
+      tooltip: { shared: true, intersect: false, theme: 'dark', style: { fontSize: '12px' } },
+      legend:  { show: false }
+    };
+
+    var chartEl = document.getElementById('apx-chart');
+    if (chartEl) {
+      var chart = new ApexCharts(chartEl, chartOptions);
+      chart.render();
+    } else {
+      showErr('Element #apx-chart tidak ditemukan di DOM');
+    }
+
+  } catch (ex) {
+    showErr('JS Error: ' + ex.message);
+    if (dbg) dbg.innerText = 'JS Error: ' + ex.message;
   }
-})();
+});
 </script>
 
 <?php require __DIR__ . '/partials/footer.php'; ?>

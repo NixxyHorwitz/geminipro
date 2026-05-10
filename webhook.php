@@ -2,14 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 
-$secret = $_ENV['TELEGRAM_WEBHOOK_SECRET'] ?? '';
 $token  = $_ENV['TELEGRAM_BOT_TOKEN'] ?? '';
-
-// Check secret if provided in URL (optional simple auth)
-if (!empty($secret) && ($_GET['secret'] ?? '') !== $secret) {
-    http_response_code(403);
-    exit('Forbidden');
-}
 
 $input = file_get_contents('php://input');
 $update = json_decode($input, true);

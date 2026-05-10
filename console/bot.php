@@ -9,12 +9,7 @@ $activePage = 'bot';
 $msg = '';
 $botToken = $_ENV['TELEGRAM_BOT_TOKEN'] ?? '';
 $chatId = $_ENV['TELEGRAM_ADMIN_CHAT_ID'] ?? '';
-$webhookSecret = $_ENV['TELEGRAM_WEBHOOK_SECRET'] ?? '';
 $appUrl = $_ENV['APP_URL'] ?? 'https://'.$_SERVER['HTTP_HOST'];
-
-if (empty($webhookSecret)) {
-    $webhookSecret = bin2hex(random_bytes(16));
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -33,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $env = preg_replace('/^TELEGRAM_ADMIN_CHAT_ID=.*$/m', 'TELEGRAM_ADMIN_CHAT_ID=' . $chatId, $env);
         if (strpos($env, 'TELEGRAM_ADMIN_CHAT_ID=') === false) $env .= "\nTELEGRAM_ADMIN_CHAT_ID=" . $chatId;
         
-        $env = preg_replace('/^TELEGRAM_WEBHOOK_SECRET=.*$/m', 'TELEGRAM_WEBHOOK_SECRET=' . $webhookSecret, $env);
-        if (strpos($env, 'TELEGRAM_WEBHOOK_SECRET=') === false) $env .= "\nTELEGRAM_WEBHOOK_SECRET=" . $webhookSecret;
+        // Ensure secret line is removed if it existed
+        $env = preg_replace('/^TELEGRAM_WEBHOOK_SECRET=.*$\n?/m', '', $env);
         
         file_put_contents($envFile, $env);
     }
@@ -53,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $msgType = 'error';
         } else {
             $url = "https://api.telegram.org/bot$botToken/setWebhook";
-            $webhookUrl = rtrim($appUrl, '/') . '/webhook.php?secret=' . $webhookSecret;
+            $webhookUrl = rtrim($appUrl, '/') . '/webhook.php';
             
             $ch = curl_init($url . "?url=" . urlencode($webhookUrl));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -141,7 +136,7 @@ require __DIR__ . '/partials/header.php';
         URL webhook rahasia Anda sudah diset untuk menerima pembaruan secara otomatis dari Telegram.
       </p>
       <code style="font-size:12px;background:var(--c-bg);padding:8px;border-radius:6px;display:block;word-break:break-all;border:1px solid var(--c-border);margin-bottom:10px;color:var(--c-text)">
-        <?= htmlspecialchars(rtrim($appUrl, '/') . '/webhook.php?secret=' . $webhookSecret) ?>
+        <?= htmlspecialchars(rtrim($appUrl, '/') . '/webhook.php') ?>
       </code>
       <p class="form-hint" style="font-size:12px">
         Gunakan tombol <strong>Simpan & Sync Webhook</strong> di form sebelah kiri jika Anda ingin melakukan reset koneksi dengan bot.

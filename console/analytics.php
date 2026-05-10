@@ -9,7 +9,17 @@ $validRanges = ['jam','day','week','month','6month'];
 if (!in_array($range, $validRanges, true)) $range = 'month';
 
 $chartMode = 'daily';
-switch ($range) {
+$dateStr = $_GET['date'] ?? '';
+$useDate = false;
+
+if ($dateStr && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateStr)) {
+    $useDate = true;
+    $chartMode = 'hourly';
+    $rwhere = "WHERE DATE(created_at) = '$dateStr'";
+    $rgroup = "HOUR(created_at)"; $rtitle = "Tanggal " . date('d M Y', strtotime($dateStr));
+    $range = ''; // Kosongkan active range
+} else {
+    switch ($range) {
     case 'jam':
         $rwhere = "WHERE created_at >= NOW() - INTERVAL 24 HOUR";
         $rgroup = "HOUR(created_at)"; $rtitle = "24 Jam Terakhir"; $chartMode = 'hourly'; break;
@@ -22,9 +32,10 @@ switch ($range) {
     case '6month':
         $rwhere = "WHERE created_at >= CURDATE() - INTERVAL 180 DAY";
         $rgroup = "DATE_FORMAT(created_at,'%Y-%m')"; $rtitle = "6 Bulan"; $chartMode = 'monthly'; break;
-    default: // month
-        $rwhere = "WHERE created_at >= CURDATE() - INTERVAL 29 DAY";
-        $rgroup = "DATE(created_at)"; $rtitle = "30 Hari"; break;
+        default: // month
+            $rwhere = "WHERE created_at >= CURDATE() - INTERVAL 29 DAY";
+            $rgroup = "DATE(created_at)"; $rtitle = "30 Hari"; break;
+    }
 }
 
 try {
@@ -82,11 +93,23 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
   </div>
 </div>
 
-<div class="range-bar" style="margin-bottom:20px">
-  <?php $ranges=['jam'=>'24 Jam','day'=>'Hari Ini','week'=>'Minggu','month'=>'30 Hari','6month'=>'6 Bulan'];
-  foreach ($ranges as $k=>$v): ?>
-  <a href="?range=<?=$k?>" class="range-btn <?=($range===$k)?'active':''?>"><?=$v?></a>
-  <?php endforeach; ?>
+<div class="range-bar" style="margin-bottom:20px;justify-content:space-between">
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+    <?php $ranges=['jam'=>'24 Jam','day'=>'Hari Ini','week'=>'Minggu','month'=>'30 Hari','6month'=>'6 Bulan'];
+    foreach ($ranges as $k=>$v): ?>
+    <a href="?range=<?=$k?>" class="range-btn <?=($range===$k && !$useDate)?'active':''?>"><?=$v?></a>
+    <?php endforeach; ?>
+  </div>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <form method="GET" style="display:flex;gap:6px;align-items:center;margin:0">
+        <input type="date" name="date" value="<?= htmlspecialchars($dateStr) ?>" style="padding:4px 10px;border-radius:20px;border:1.5px solid var(--c-border);font-size:12px;background:var(--c-surface);color:var(--c-text);outline:none">
+        <button type="submit" class="range-btn" style="background:#111;color:#fff;border-color:#111">Cari Tgl</button>
+    </form>
+    <select id="chartTypeToggle" style="padding:5px 12px;border-radius:20px;border:1.5px solid var(--c-border);font-size:12px;background:var(--c-surface);color:var(--c-text);outline:none;cursor:pointer">
+        <option value="area">Grafik Gelombang</option>
+        <option value="bar">Grafik Batang</option>
+    </select>
+  </div>
 </div>
 
 <div class="metric-grid">
@@ -219,7 +242,29 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var chartEl = document.getElementById('apx-chart');
     if (chartEl) {
-      new ApexCharts(chartEl, chartOptions).render();
+      var chart = new ApexCharts(chartEl, chartOptions);
+      chart.render();
+      
+      var toggle = document.getElementById('chartTypeToggle');
+      if (toggle) {
+          toggle.addEventListener('change', function() {
+              var t = this.value; // 'area' atau 'bar'
+              chart.updateOptions({
+                  chart: { type: t },
+                  stroke: { curve: t === 'area' ? 'smooth' : 'straight', width: t === 'area' ? [3,3] : [0,0] },
+                  fill: {
+                      type: t === 'area' ? 'gradient' : 'solid',
+                      gradient: t === 'area' ? { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0,100] } : undefined,
+                      opacity: t === 'area' ? undefined : 0.9
+                  }
+              });
+              // Update series type (ApexCharts mixed charts needs series type updated too)
+              chart.updateSeries([
+                  { name: 'Traffic Hits', type: t, data: tArr },
+                  { name: 'Transaksi', type: t, data: oArr }
+              ]);
+          });
+      }
     }
   } catch (ex) {
     if(errBox){ errBox.style.display='block'; errBox.innerText = 'JS Error: ' + ex.message; }

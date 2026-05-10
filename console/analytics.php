@@ -165,8 +165,8 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 document.addEventListener("DOMContentLoaded", function() {
   var errBox = document.getElementById('chart-error');
   
-  if (typeof ApexCharts === 'undefined') {
-    if(errBox){ errBox.style.display='block'; errBox.innerText = 'ApexCharts gagal di-load dari CDN. Pastikan koneksi internet stabil.'; }
+  if (typeof Chart === 'undefined') {
+    if(errBox){ errBox.style.display='block'; errBox.innerText = 'Chart.js gagal di-load dari CDN. Pastikan koneksi internet stabil.'; }
     return;
   }
 

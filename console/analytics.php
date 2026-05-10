@@ -84,6 +84,13 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 .chart-card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:12px;padding:20px;margin-bottom:20px}
 .chart-card__hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px}
 .chart-card__ttl{font-size:16px;font-weight:600;color:var(--c-text)}
+.clg-wrap{display:flex;gap:16px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--c-border);margin-bottom:20px}
+.clg-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--c-text-sec);cursor:pointer;user-select:none;transition:.2s}
+.clg-item:hover{color:var(--c-text)}
+.clg-item input{display:none}
+.clg-box{width:16px;height:16px;border-radius:4px;transition:.2s;position:relative;border:2px solid transparent}
+.clg-item input:not(:checked) ~ .clg-box{background:transparent !important;border-color:var(--c-border)}
+.clg-item input:checked ~ .clg-box::after{content:'';position:absolute;top:2px;left:5px;width:4px;height:7px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg)}
 </style>
 
 <div class="tf-header">
@@ -108,8 +115,8 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
     <select id="chartTypeToggle" style="padding:5px 12px;border-radius:20px;border:1.5px solid var(--c-border);font-size:12px;background:var(--c-surface);color:var(--c-text);outline:none;cursor:pointer">
         <option value="area">Grafik Gelombang</option>
         <option value="bar">Grafik Batang</option>
-        <option value="line">Grafik Garis Klasik</option>
-        <option value="scatter">Grafik Titik Scatter</option>
+        <option value="line">Grafik Garis Smooth</option>
+        <option value="stepline">Grafik Tangga</option>
     </select>
   </div>
 </div>
@@ -134,14 +141,15 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
   </div>
 </div>
 
-<!-- ApexCharts Wave Area -->
 <div class="chart-card">
-  <div class="chart-card__hd">
-    <div class="chart-card__ttl">Visualisasi Trafik vs Revenue (<?=htmlspecialchars($rtitle)?>)</div>
-    <div style="display:flex;gap:12px;font-size:12px;font-weight:600;color:var(--c-text-sec)">
-      <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;background:#4285F4;border-radius:3px"></span> Trafik Hits</span>
-      <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;background:#10b981;border-radius:3px"></span> Transaksi</span>
-    </div>
+  <div class="chart-card__hd" style="margin-bottom:16px">
+    <div class="chart-card__ttl">Visualisasi Kinerja Website (<?=htmlspecialchars($rtitle)?>)</div>
+  </div>
+  
+  <div class="clg-wrap" id="chartLegend">
+      <label class="clg-item"><input type="checkbox" value="Traffic Hits" checked> <span class="clg-box" style="background:#4285F4"></span> Trafik Hits</label>
+      <label class="clg-item"><input type="checkbox" value="Transaksi" checked> <span class="clg-box" style="background:#10b981"></span> Transaksi</label>
+      <label class="clg-item"><input type="checkbox" value="Revenue (Rp)" checked> <span class="clg-box" style="background:#f59e0b"></span> Revenue (Rp)</label>
   </div>
   
   <div id="apx-chart" style="min-height:300px"></div>
@@ -165,27 +173,34 @@ document.addEventListener("DOMContentLoaded", function() {
     var oRaw = <?= json_encode($ordersChart) ?>;
     var mode = <?= json_encode($chartMode) ?>;
 
-    var labels = [], tArr = [], oArr = [];
+    var labels = [], tArr = [], oArr = [], rArr = [];
     
     // Perbaikan mapping hari ini / 24 jam yang datanya bertipe jam (0-23)
     if (mode === 'hourly') {
-      for (var i = 0; i < 24; i++) { labels.push((i < 10 ? '0' : '') + i + ':00'); }
-      for (var i = 0; i < 24; i++) { tArr.push(0); oArr.push(0); }
+      for (var i = 0; i < 24; i++) { labels.push((i < 10 ? '0' : '') + i + ':00'); tArr.push(0); oArr.push(0); rArr.push(0); }
       for (var j = 0; j < tRaw.length; j++) { tArr[parseInt(tRaw[j].lbl, 10)] = parseInt(tRaw[j].cnt, 10); }
-      for (var k = 0; k < oRaw.length; k++) { oArr[parseInt(oRaw[k].lbl, 10)] = parseInt(oRaw[k].cnt, 10); }
+      for (var k = 0; k < oRaw.length; k++) {
+          var idx = parseInt(oRaw[k].lbl, 10);
+          oArr[idx] = parseInt(oRaw[k].cnt, 10);
+          rArr[idx] = parseFloat(oRaw[k].rev || 0);
+      }
     } else {
       var keySet = {};
       for (var a = 0; a < tRaw.length; a++) { keySet[String(tRaw[a].lbl)] = 1; }
       for (var b = 0; b < oRaw.length; b++) { keySet[String(oRaw[b].lbl)] = 1; }
       labels = Object.keys(keySet).sort();
-      var tm = {}, om = {};
+      var tm = {}, om = {}, rm = {};
       for (var c = 0; c < tRaw.length; c++) { tm[String(tRaw[c].lbl)] = parseInt(tRaw[c].cnt, 10); }
-      for (var d = 0; d < oRaw.length; d++) { om[String(oRaw[d].lbl)] = parseInt(oRaw[d].cnt, 10); }
+      for (var d = 0; d < oRaw.length; d++) {
+          om[String(oRaw[d].lbl)] = parseInt(oRaw[d].cnt, 10);
+          rm[String(oRaw[d].lbl)] = parseFloat(oRaw[d].rev || 0);
+      }
       
       for (var e = 0; e < labels.length; e++) {
         var lb = labels[e];
         tArr.push(tm[lb] || 0);
         oArr.push(om[lb] || 0);
+        rArr.push(rm[lb] || 0);
       }
     }
 
@@ -196,30 +211,27 @@ document.addEventListener("DOMContentLoaded", function() {
     var initStyle = (function(t) {
         var isArea = t === 'area';
         var isBar = t === 'bar';
-        var isScatter = t === 'scatter';
+        var isLine = t === 'line';
+        var isStep = t === 'stepline';
         return {
-            strokeCurve: isArea ? 'smooth' : 'straight',
-            strokeWidth: (isBar || isScatter) ? [0,0] : [3,3],
+            type: isStep ? 'line' : t,
+            strokeCurve: isStep ? 'stepline' : (isArea || isLine ? 'smooth' : 'straight'),
+            strokeWidth: isBar ? [0,0,0] : [3,3,3],
             fillType: isArea ? 'gradient' : 'solid',
-            fillOp: isBar ? 0.9 : 1,
-            markerSize: isScatter ? 5 : 0
+            fillOp: isBar ? 0.9 : 1
         };
     })(savedType);
 
     var chartOptions = {
       series: [
-        { name: 'Traffic Hits', type: savedType, data: tArr },
-        { name: 'Transaksi', type: savedType, data: oArr }
+        { name: 'Traffic Hits', type: initStyle.type, data: tArr },
+        { name: 'Transaksi', type: initStyle.type, data: oArr },
+        { name: 'Revenue (Rp)', type: initStyle.type, data: rArr }
       ],
       chart: {
-        height: 320,
-        type: savedType,
-        background: 'transparent',
-        toolbar: { show: false },
-        zoom: { enabled: false },
-        animations: { enabled: true, speed: 600 }
+        height: 320, type: initStyle.type, background: 'transparent', toolbar: { show: false }, zoom: { enabled: false }, animations: { enabled: true, speed: 600 }
       },
-      colors: ['#4285F4', '#10b981'],
+      colors: ['#4285F4', '#10b981', '#f59e0b'],
       fill: {
         type: initStyle.fillType,
         gradient: savedType === 'area' ? { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 100] } : undefined,
@@ -227,31 +239,36 @@ document.addEventListener("DOMContentLoaded", function() {
       },
       dataLabels: { enabled: false },
       stroke: { curve: initStyle.strokeCurve, width: initStyle.strokeWidth },
-      markers: { size: initStyle.markerSize, hover: { size: 6 } },
+      markers: { size: 0, hover: { size: 6 } },
       xaxis: {
         categories: labels,
         labels: { style: { colors: '#6b7280', fontSize: '11px' } },
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-        tooltip: { enabled: false }
+        axisBorder: { show: false }, axisTicks: { show: false }, tooltip: { enabled: false }
       },
       yaxis: [
         {
+          seriesName: 'Traffic Hits',
           title: { text: 'Hits Trafik', style: { color: '#4285F4', fontSize: '11px', fontWeight: 600 } },
           labels: { style: { colors: '#4285F4', fontSize: '11px' } },
-          min: 0,
-          forceNiceScale: true
+          min: 0, forceNiceScale: true
         },
         {
+          seriesName: 'Transaksi',
           opposite: true,
-          title: { text: 'Jumlah Transaksi', style: { color: '#10b981', fontSize: '11px', fontWeight: 600 } },
+          title: { text: 'Transaksi', style: { color: '#10b981', fontSize: '11px', fontWeight: 600 } },
           labels: { style: { colors: '#10b981', fontSize: '11px' } },
-          min: 0,
-          forceNiceScale: true
+          min: 0, forceNiceScale: true
+        },
+        {
+          seriesName: 'Revenue (Rp)',
+          opposite: true,
+          title: { text: 'Revenue (Rp)', style: { color: '#f59e0b', fontSize: '11px', fontWeight: 600 } },
+          labels: { style: { colors: '#f59e0b', fontSize: '11px' }, formatter: function(v){ return v>=1000 ? 'Rp '+(v/1000).toFixed(0)+'k' : 'Rp '+v; } },
+          min: 0, forceNiceScale: true
         }
       ],
       grid: { borderColor: 'rgba(128,128,128,0.1)', strokeDashArray: 4 },
-      tooltip: { shared: true, intersect: false, theme: 'light', style: { fontSize: '12px' } },
+      tooltip: { shared: true, intersect: false, theme: 'light', style: { fontSize: '12px' }, y: { formatter: function(val, { seriesIndex }) { return seriesIndex === 2 ? 'Rp ' + val.toLocaleString() : val; } } },
       legend: { show: false }
     };
 
@@ -267,25 +284,35 @@ document.addEventListener("DOMContentLoaded", function() {
               
               var isArea = t === 'area';
               var isBar = t === 'bar';
-              var isScatter = t === 'scatter';
+              var isLine = t === 'line';
+              var isStep = t === 'stepline';
+              var actualType = isStep ? 'line' : t;
               
               chart.updateOptions({
-                  chart: { type: t },
-                  stroke: { curve: isArea ? 'smooth' : 'straight', width: (isBar || isScatter) ? [0,0] : [3,3] },
+                  chart: { type: actualType },
+                  stroke: { curve: isStep ? 'stepline' : (isArea || isLine ? 'smooth' : 'straight'), width: isBar ? [0,0,0] : [3,3,3] },
                   fill: {
                       type: isArea ? 'gradient' : 'solid',
                       gradient: isArea ? { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0,100] } : undefined,
                       opacity: isBar ? 0.9 : 1
-                  },
-                  markers: { size: isScatter ? 5 : 0 }
+                  }
               });
               
               chart.updateSeries([
-                  { name: 'Traffic Hits', type: t, data: tArr },
-                  { name: 'Transaksi', type: t, data: oArr }
+                  { name: 'Traffic Hits', type: actualType, data: tArr },
+                  { name: 'Transaksi', type: actualType, data: oArr },
+                  { name: 'Revenue (Rp)', type: actualType, data: rArr }
               ]);
           });
       }
+      
+      // Custom Legend Checkbox Toggle
+      var legendChecks = document.querySelectorAll('#chartLegend input[type="checkbox"]');
+      legendChecks.forEach(function(chk) {
+          chk.addEventListener('change', function() {
+              chart.toggleSeries(this.value);
+          });
+      });
     }
   } catch (ex) {
     if(errBox){ errBox.style.display='block'; errBox.innerText = 'JS Error: ' + ex.message; }

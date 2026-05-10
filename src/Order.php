@@ -43,6 +43,30 @@ class Order
             $expires,
         ]);
 
+        // Send Telegram Notification
+        $botToken = $_ENV['TELEGRAM_BOT_TOKEN'] ?? '';
+        $chatId = $_ENV['TELEGRAM_ADMIN_CHAT_ID'] ?? '';
+        if ($botToken && $chatId) {
+            $text = "<b>🔔 NEW ORDER PENDING</b>\n" .
+                    "Code: <code>$code</code>\n" .
+                    "Amount: " . self::formatRp($amount) . "\n" .
+                    "Method: " . ($data['method'] ?? 'link') . "\n" .
+                    "Email: {$data['email']}\n\n" .
+                    "<i>Kirim order_code $code ke bot ini untuk Success.</i>";
+            
+            $url = "https://api.telegram.org/bot$botToken/sendMessage";
+            $postData = ['chat_id' => $chatId, 'text' => $text, 'parse_mode' => 'HTML'];
+            $options = [
+                'http' => [
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'POST',
+                    'content' => http_build_query($postData),
+                    'ignore_errors' => true
+                ]
+            ];
+            @file_get_contents($url, false, stream_context_create($options));
+        }
+
         return $this->findByCode($code);
     }
 

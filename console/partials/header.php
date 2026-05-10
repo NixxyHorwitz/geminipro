@@ -51,9 +51,9 @@ $activePage = $activePage ?? '';
       }
       ?>
     </a>
-    <a href="/console/traffic.php" class="sidebar__link <?= $activePage === 'traffic' ? 'active' : '' ?>">
+    <a href="/console/analytics.php" class="sidebar__link <?= $activePage === 'analytics' ? 'active' : '' ?>">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Traffic & Stats
+      Analytics Web
     </a>
 
     <div class="sidebar__label">Konfigurasi</div>
@@ -72,6 +72,10 @@ $activePage = $activePage ?? '';
     <a href="/console/settings.php" class="sidebar__link <?= $activePage === 'settings' ? 'active' : '' ?>">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       Settings
+    </a>
+    <a href="/console/bot.php" class="sidebar__link <?= $activePage === 'bot' ? 'active' : '' ?>">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      Telegram Bot
     </a>
     <a href="/console/passwd.php" class="sidebar__link <?= $activePage === 'passwd' ? 'active' : '' ?>">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>

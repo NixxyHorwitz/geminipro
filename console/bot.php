@@ -9,6 +9,7 @@ $activePage = 'bot';
 $msg = '';
 $botToken = $_ENV['TELEGRAM_BOT_TOKEN'] ?? '';
 $chatId = $_ENV['TELEGRAM_ADMIN_CHAT_ID'] ?? '';
+$orderNotif = $_ENV['TELEGRAM_ORDER_NOTIF'] ?? '0';
 $appUrl = $_ENV['APP_URL'] ?? 'https://'.$_SERVER['HTTP_HOST'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Selalu ambil dari input post untuk menghindari "kosong" saat error
     $botToken = trim($_POST['bot_token'] ?? '');
     $chatId = trim($_POST['chat_id'] ?? '');
+    $orderNotif = isset($_POST['order_notif']) ? '1' : '0';
 
     // 1. Simpan ke .env dulu apapun actionnya
     $envFile = dirname(__DIR__) . '/.env';
@@ -27,6 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $env = preg_replace('/^TELEGRAM_ADMIN_CHAT_ID=.*$/m', 'TELEGRAM_ADMIN_CHAT_ID=' . $chatId, $env);
         if (strpos($env, 'TELEGRAM_ADMIN_CHAT_ID=') === false) $env .= "\nTELEGRAM_ADMIN_CHAT_ID=" . $chatId;
+        
+        $env = preg_replace('/^TELEGRAM_ORDER_NOTIF=.*$/m', 'TELEGRAM_ORDER_NOTIF=' . $orderNotif, $env);
+        if (strpos($env, 'TELEGRAM_ORDER_NOTIF=') === false) $env .= "\nTELEGRAM_ORDER_NOTIF=" . $orderNotif;
         
         // Ensure secret line is removed if it existed
         $env = preg_replace('/^TELEGRAM_WEBHOOK_SECRET=.*$\n?/m', '', $env);
@@ -111,6 +116,13 @@ require __DIR__ . '/partials/header.php';
           <label class="form-label">Admin Chat ID</label>
           <input type="text" name="chat_id" class="form-control" value="<?= htmlspecialchars($chatId) ?>" placeholder="Contoh: 7884836068" required>
           <div class="form-hint">ID chat pribadi Anda untuk menerima notifikasi.</div>
+        </div>
+        <div class="form-group" style="margin-top:16px;margin-bottom:24px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+            <input type="checkbox" name="order_notif" value="1" <?= $orderNotif === '1' ? 'checked' : '' ?> style="width:16px;height:16px;cursor:pointer">
+            <span style="font-weight:600;font-size:14px">Aktifkan Notifikasi Order Baru</span>
+          </label>
+          <div class="form-hint" style="margin-left:26px">Kirim pesan otomatis ke Telegram setiap ada pembeli yang melakukan checkout/scan QRIS.</div>
         </div>
         <div style="display:flex;gap:12px;margin-top:10px">
           <button type="submit" name="action" value="save" class="btn btn--primary">Simpan Pengaturan</button>

@@ -120,6 +120,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $newOrder = $order->create($data);
             $logger->log('/checkout', 'order_created', ['order_code' => $newOrder['order_code']]);
 
+            // Kirim notifikasi Telegram jika diaktifkan
+            if (\App\Config::env('TELEGRAM_ORDER_NOTIF') === '1') {
+                $botToken = \App\Config::env('TELEGRAM_BOT_TOKEN');
+                $chatId = \App\Config::env('TELEGRAM_ADMIN_CHAT_ID');
+                if ($botToken && $chatId) {
+                    $text = "🔔 *PESANAN BARU (PENDING)*\n\n"
+                          . "Order Code: `{$newOrder['order_code']}`\n"
+                          . "Email: {$email}\n"
+                          . "Nominal: Rp " . number_format($price, 0, ',', '.') . "\n\n"
+                          . "Balas chat ini dengan `{$newOrder['order_code']}` untuk mengonfirmasi pembayaran jika saldo QRIS sudah masuk.";
+                    
+                    $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
+                    $ch = curl_init($url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                        'chat_id' => $chatId,
+                        'text' => $text,
+                        'parse_mode' => 'Markdown'
+                    ]));
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 3); // Jangan sampai checkout hang jika tele down
+                    curl_exec($ch);
+                    curl_close($ch);
+                }
+            }
+
             // Redirect to step 2
             header("Location: checkout.php?step=2&order={$newOrder['order_code']}"); exit;
         } catch (\Throwable $e) {

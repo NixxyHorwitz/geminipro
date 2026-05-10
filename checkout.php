@@ -36,6 +36,27 @@ $uniqueFeeEnabled = Config::get('unique_fee_enabled', '0') === '1';
 $step     = (int) ($_GET['step'] ?? 1);
 $errors   = [];
 
+// Initialize fee service in session for step 1 to display to user
+if ($step === 1 && $uniqueFeeEnabled && !isset($_SESSION['checkout_fee'])) {
+    $min = (int) Config::get('unique_fee_min', 1);
+    $max = (int) Config::get('unique_fee_max', 999);
+    if ($max >= $min) {
+        $fee = 0;
+        for ($i=0; $i<50; $i++) {
+            $testFee = mt_rand($min, $max);
+            $testAmount = $price + $testFee;
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE status='pending' AND amount = ?");
+            $stmt->execute([$testAmount]);
+            if ($stmt->fetchColumn() == 0) {
+                $fee = $testFee;
+                break;
+            }
+        }
+        if ($fee === 0) $fee = mt_rand($min, $max); // fallback
+        $_SESSION['checkout_fee'] = $fee;
+    }
+}
+
 // -----------------------------------------------------------------------
 // Get active QRIS template
 // -----------------------------------------------------------------------
@@ -111,12 +132,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         try {
             $finalPrice = $price;
             if ($uniqueFeeEnabled) {
+                $fee = $_SESSION['checkout_fee'] ?? 0;
                 $min = (int) Config::get('unique_fee_min', 1);
                 $max = (int) Config::get('unique_fee_max', 999);
+                
+                // Double check uniqueness just in case someone else took this amount
                 if ($max >= $min) {
-                    $finalPrice += mt_rand($min, $max);
+                    for ($i=0; $i<10; $i++) {
+                        if ($fee <= 0) $fee = mt_rand($min, $max);
+                        $testAmount = $price + $fee;
+                        $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE status='pending' AND amount = ?");
+                        $stmt->execute([$testAmount]);
+                        if ($stmt->fetchColumn() == 0) break;
+                        $fee = 0; // force re-roll
+                    }
                 }
+                $finalPrice += $fee;
             }
+            unset($_SESSION['checkout_fee']);
 
             $data = [
                 'email'            => $email,
@@ -200,6 +233,9 @@ if ($currentOrder) {
 } elseif ($doneOrder) {
     $displayPrice = (int)$doneOrder['amount'];
     $feeAmount = $displayPrice - $price;
+} elseif ($step === 1 && $uniqueFeeEnabled) {
+    $feeAmount = $_SESSION['checkout_fee'] ?? 0;
+    $displayPrice = $price + $feeAmount;
 }
 $displayPriceStr = 'Rp ' . number_format($displayPrice, 0, ',', '.');
 $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
@@ -407,14 +443,10 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
     </div>
     <?php if ($feeAmount > 0): ?>
     <div class="order-line">
-      <span class="order-line__label">Fee Service / Kode Unik</span>
+      <span class="order-line__label">Fee Service</span>
       <span class="order-line__value" style="color:var(--c-blue)">+ <?= $feeAmountStr ?></span>
     </div>
     <?php endif; ?>
-    <div class="order-line">
-      <span class="order-line__label">Promo bulan pertama</span>
-      <span class="order-line__value" style="color:var(--c-green)">Rp 0</span>
-    </div>
     <div class="order-line">
       <span class="order-line__label">Durasi</span>
       <span class="order-line__value">12 bulan</span>

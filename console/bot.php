@@ -7,10 +7,10 @@ $pageTitle  = 'Telegram Bot';
 $activePage = 'bot';
 
 $msg = '';
-$botToken = $_ENV['TELEGRAM_BOT_TOKEN'] ?? '';
-$chatId = $_ENV['TELEGRAM_ADMIN_CHAT_ID'] ?? '';
-$orderNotif = $_ENV['TELEGRAM_ORDER_NOTIF'] ?? '0';
-$appUrl = $_ENV['APP_URL'] ?? 'https://'.$_SERVER['HTTP_HOST'];
+$botToken = \App\Config::env('TELEGRAM_BOT_TOKEN', '');
+$chatId = \App\Config::env('TELEGRAM_ADMIN_CHAT_ID', '');
+$orderNotif = \App\Config::env('TELEGRAM_ORDER_NOTIF', '0');
+$appUrl = \App\Config::env('APP_URL', 'https://'.$_SERVER['HTTP_HOST']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -39,9 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         file_put_contents($envFile, $env);
     }
     
-    // Set ulang ke _ENV agar tidak kosong
-    $_ENV['TELEGRAM_BOT_TOKEN'] = $botToken;
-    $_ENV['TELEGRAM_ADMIN_CHAT_ID'] = $chatId;
+    // Force config re-init to reflect changes immediately without needing page reload
+    \App\Config::init(dirname(__DIR__));
     
     $msg = "Pengaturan Bot berhasil disimpan!";
     $msgType = 'success';

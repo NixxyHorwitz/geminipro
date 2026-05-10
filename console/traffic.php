@@ -13,16 +13,16 @@ $filter  = $_GET['action'] ?? 'all';
 $validRanges = ['jam','day','week','month','6month'];
 if (!in_array($range, $validRanges, true)) $range = 'day';
 
-$useDate  = (bool)preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateStr);
-$prevDate = $nextDate = '';
+$useDate   = (bool)preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateStr);
+$prevDate  = $nextDate = '';
 $chartMode = 'hourly';
 
 if ($useDate) {
-    $rwhere    = "WHERE DATE(created_at) = " . $pdo->quote($dateStr);
-    $rgroup    = "HOUR(created_at)";
-    $rtitle    = "Tanggal " . date('d M Y', strtotime($dateStr));
-    $prevDate  = date('Y-m-d', strtotime($dateStr . ' -1 day'));
-    $nextDate  = date('Y-m-d', strtotime($dateStr . ' +1 day'));
+    $rwhere   = "WHERE DATE(created_at) = " . $pdo->quote($dateStr);
+    $rgroup   = "HOUR(created_at)";
+    $rtitle   = "Tanggal " . date('d M Y', strtotime($dateStr));
+    $prevDate = date('Y-m-d', strtotime($dateStr . ' -1 day'));
+    $nextDate = date('Y-m-d', strtotime($dateStr . ' +1 day'));
 } else {
     switch ($range) {
         case 'jam':
@@ -37,7 +37,7 @@ if ($useDate) {
         case '6month':
             $rwhere = "WHERE created_at >= CURDATE() - INTERVAL 180 DAY";
             $rgroup = "DATE_FORMAT(created_at,'%Y-%m')"; $rtitle = "6 Bulan"; $chartMode = 'monthly'; break;
-        default: // day
+        default:
             $rwhere = "WHERE DATE(created_at)=CURDATE()";
             $rgroup = "HOUR(created_at)"; $rtitle = "Hari Ini"; $chartMode = 'hourly'; break;
     }
@@ -49,17 +49,16 @@ try {
     $orderHits    = (int)$pdo->query("SELECT COUNT(*) FROM traffic_logs {$rwhere} AND action='order_created'")->fetchColumn();
     $convRate     = $totalHits > 0 ? round(($orderHits / $totalHits) * 100, 2) : 0;
 
-    $rwhere_o     = str_replace('created_at', 'created_at', $rwhere); // orders table (no alias)
-    $totalOrders  = (int)$pdo->query("SELECT COUNT(*) FROM orders {$rwhere_o}")->fetchColumn();
-    $totalRevenue = (int)$pdo->query("SELECT COALESCE(SUM(amount),0) FROM orders {$rwhere_o} AND status='confirmed'")->fetchColumn();
-    $pendingOrders= (int)$pdo->query("SELECT COUNT(*) FROM orders {$rwhere_o} AND status='pending'")->fetchColumn();
+    $totalOrders  = (int)$pdo->query("SELECT COUNT(*) FROM orders {$rwhere}")->fetchColumn();
+    $totalRevenue = (int)$pdo->query("SELECT COALESCE(SUM(amount),0) FROM orders {$rwhere} AND status='confirmed'")->fetchColumn();
+    $pendingOrders= (int)$pdo->query("SELECT COUNT(*) FROM orders {$rwhere} AND status='pending'")->fetchColumn();
 
     $trafficChart = $pdo->query(
         "SELECT {$rgroup} as lbl, COUNT(*) as cnt FROM traffic_logs {$rwhere} GROUP BY {$rgroup} ORDER BY {$rgroup}"
     )->fetchAll(PDO::FETCH_ASSOC);
 
     $ordersChart = $pdo->query(
-        "SELECT {$rgroup} as lbl, COUNT(*) as cnt FROM orders {$rwhere_o} GROUP BY {$rgroup} ORDER BY {$rgroup}"
+        "SELECT {$rgroup} as lbl, COUNT(*) as cnt FROM orders {$rwhere} GROUP BY {$rgroup} ORDER BY {$rgroup}"
     )->fetchAll(PDO::FETCH_ASSOC);
 
     $topPages = $pdo->query(
@@ -105,13 +104,13 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 .range-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid var(--c-border);background:transparent;color:var(--c-text-sec);cursor:pointer;transition:.15s;text-decoration:none;display:inline-block}
 .range-btn.active,.range-btn:hover{background:#4285F4;border-color:#4285F4;color:#fff}
 .date-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.date-nav input[type=date]{padding:5px 10px;border-radius:8px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-size:13px;cursor:pointer}
-.date-nav .nav-btn{padding:5px 10px;border-radius:8px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text-sec);cursor:pointer;font-size:13px;transition:.15s;text-decoration:none;display:inline-flex;align-items:center}
-.date-nav .nav-btn:hover{border-color:#4285F4;color:#4285F4}
+.date-nav input[type=date]{padding:5px 10px;border-radius:8px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-size:13px}
+.nav-btn{padding:5px 10px;border-radius:8px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text-sec);font-size:13px;transition:.15s;text-decoration:none;display:inline-flex;align-items:center}
+.nav-btn:hover{border-color:#4285F4;color:#4285F4}
 .metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px}
 .mc{background:var(--c-surface);border:1px solid var(--c-border);border-radius:12px;padding:16px;position:relative;overflow:hidden;transition:.2s}
 .mc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
-.mc__bar{position:absolute;top:0;left:0;width:3px;height:100%;border-radius:3px 0 0 3px}
+.mc__bar{position:absolute;top:0;left:0;width:3px;height:100%}
 .mc__lbl{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--c-text-hint);margin-bottom:8px}
 .mc__val{font-size:24px;font-weight:700;line-height:1;color:var(--c-text)}
 .mc__sub{font-size:11px;color:var(--c-text-hint);margin-top:4px}
@@ -130,7 +129,7 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 .mlist__bar{flex:1;background:var(--c-border);border-radius:4px;height:5px;overflow:hidden}
 .mlist__fill{height:100%;border-radius:4px;transition:.4s}
 .mlist__cnt{flex:0 0 38px;text-align:right;font-weight:600;color:var(--c-text);font-size:12px}
-.atag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:var(--c-surface);border:1px solid var(--c-border);color:var(--c-text-sec);cursor:pointer;text-decoration:none;transition:.15s}
+.atag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:var(--c-surface);border:1px solid var(--c-border);color:var(--c-text-sec);text-decoration:none;transition:.15s}
 .atag:hover,.atag.active{background:#4285F4;border-color:#4285F4;color:#fff}
 .ltable{width:100%;border-collapse:collapse}
 .ltable th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--c-text-hint);border-bottom:1px solid var(--c-border);white-space:nowrap}
@@ -142,11 +141,10 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 .bact.checkout_start{background:rgba(251,188,4,.15);color:#f59e0b}
 </style>
 
-<!-- Header -->
 <div class="tf-header">
   <div>
-    <h1 class="page-title">Traffic & Analytics</h1>
-    <p class="page-sub">Monitor aktivitas pengunjung & order — <?= htmlspecialchars($rtitle) ?></p>
+    <h1 class="page-title">Traffic &amp; Analytics</h1>
+    <p class="page-sub">Monitor aktivitas pengunjung &amp; order — <?= htmlspecialchars($rtitle) ?></p>
   </div>
   <div style="font-size:11px;color:var(--c-text-hint);padding:5px 11px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:8px">
     🔴 Live · <?= date('d M Y, H:i') ?>
@@ -158,23 +156,23 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
   <div class="range-bar">
     <?php $ranges=['jam'=>'24 Jam','day'=>'Hari Ini','week'=>'Minggu','month'=>'30 Hari','6month'=>'6 Bulan'];
     foreach ($ranges as $k=>$v): ?>
-    <a href="?range=<?=$k?>&action=<?=urlencode($filter)?>" class="range-btn <?=(!$useDate&&$range===$k)?'active':''?>"><?=$v?></a>
+    <a href="?range=<?=$k?>&amp;action=<?=urlencode($filter)?>" class="range-btn <?=(!$useDate&&$range===$k)?'active':''?>"><?=$v?></a>
     <?php endforeach; ?>
   </div>
   <div class="date-nav">
     <?php if($useDate): ?>
-    <a href="?date=<?=$prevDate?>&action=<?=urlencode($filter)?>" class="nav-btn">← Prev</a>
+    <a href="?date=<?=$prevDate?>&amp;action=<?=urlencode($filter)?>" class="nav-btn">&#8592; Prev</a>
     <?php endif; ?>
     <form method="GET" style="display:inline">
       <input type="hidden" name="action" value="<?=htmlspecialchars($filter)?>">
       <input type="date" name="date" value="<?=htmlspecialchars($dateStr)?>" onchange="this.form.submit()"
-             max="<?=date('Y-m-d')?>" style="<?=$useDate?'border-color:#4285F4':''?>">
+             max="<?=date('Y-m-d')?>" <?=$useDate?'style="border-color:#4285F4"':''?>>
     </form>
-    <?php if($useDate&&$nextDate<=date('Y-m-d')): ?>
-    <a href="?date=<?=$nextDate?>&action=<?=urlencode($filter)?>" class="nav-btn">Next →</a>
+    <?php if($useDate && $nextDate <= date('Y-m-d')): ?>
+    <a href="?date=<?=$nextDate?>&amp;action=<?=urlencode($filter)?>" class="nav-btn">Next &#8594;</a>
     <?php endif; ?>
     <?php if($useDate): ?>
-    <a href="?range=day&action=<?=urlencode($filter)?>" class="nav-btn" style="font-size:11px">✕ Reset</a>
+    <a href="?range=day&amp;action=<?=urlencode($filter)?>" class="nav-btn" style="font-size:11px">&#10005; Reset</a>
     <?php endif; ?>
   </div>
 </div>
@@ -204,7 +202,7 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 <!-- Combined Chart -->
 <div class="chart-card">
   <div class="chart-card__hd">
-    <div class="chart-card__ttl">📊 Traffic vs Orders — <?=htmlspecialchars($rtitle)?></div>
+    <div class="chart-card__ttl">&#128202; Traffic vs Orders &#8212; <?=htmlspecialchars($rtitle)?></div>
     <div class="legend">
       <span><i style="background:#4285F4"></i>Traffic Hits</span>
       <span><i style="background:#34A853"></i>Orders</span>
@@ -218,8 +216,8 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 <!-- Top Pages + Top IPs -->
 <div class="two-col">
   <div class="chart-card" style="margin-bottom:0">
-    <div class="chart-card__hd"><div class="chart-card__ttl">🔗 Top Halaman</div></div>
-    <?php $mx=max(1,...array_column($topPages,'cnt')?:[1]); ?>
+    <div class="chart-card__hd"><div class="chart-card__ttl">&#128279; Top Halaman</div></div>
+    <?php $mx=max(1,...(array_column($topPages,'cnt')?:[1])); ?>
     <ul class="mlist">
       <?php foreach($topPages as $r): ?>
       <li><div class="mlist__lbl" title="<?=htmlspecialchars($r['page'])?>"><?=htmlspecialchars($r['page'])?></div>
@@ -229,8 +227,8 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
     </ul>
   </div>
   <div class="chart-card" style="margin-bottom:0">
-    <div class="chart-card__hd"><div class="chart-card__ttl">📡 Top IP Address</div></div>
-    <?php $mx2=max(1,...array_column($topIPs,'cnt')?:[1]); ?>
+    <div class="chart-card__hd"><div class="chart-card__ttl">&#128225; Top IP Address</div></div>
+    <?php $mx2=max(1,...(array_column($topIPs,'cnt')?:[1])); ?>
     <ul class="mlist">
       <?php foreach($topIPs as $r): ?>
       <li><div class="mlist__lbl" title="<?=htmlspecialchars($r['ip_address'])?>"><?=htmlspecialchars($r['ip_address'])?></div>
@@ -244,11 +242,11 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 <!-- Log Table -->
 <div class="chart-card">
   <div class="chart-card__hd">
-    <div class="chart-card__ttl">📋 Log Aktivitas</div>
+    <div class="chart-card__ttl">&#128203; Log Aktivitas</div>
     <div style="display:flex;gap:5px;flex-wrap:wrap">
-      <a href="?range=<?=$range?>&date=<?=urlencode($dateStr)?>&action=all" class="atag <?=$filter==='all'?'active':''?>">Semua</a>
+      <a href="?range=<?=$range?>&amp;date=<?=urlencode($dateStr)?>&amp;action=all" class="atag <?=$filter==='all'?'active':''?>">Semua</a>
       <?php foreach($actions as $ac): ?>
-      <a href="?range=<?=$range?>&date=<?=urlencode($dateStr)?>&action=<?=urlencode($ac['action']??'')?>" class="atag <?=$filter===$ac['action']?'active':''?>">
+      <a href="?range=<?=$range?>&amp;date=<?=urlencode($dateStr)?>&amp;action=<?=urlencode($ac['action']??'')?>" class="atag <?=$filter===$ac['action']?'active':''?>">
         <?=htmlspecialchars($ac['action']??'null')?> <small>(<?=$ac['cnt']?>)</small></a>
       <?php endforeach; ?>
     </div>
@@ -279,99 +277,114 @@ function fRp(int $n): string { return 'Rp '.number_format($n,0,',','.'); }
 <?php if($totalPages>1): ?>
 <div class="pagination" style="margin-top:10px">
   <?php for($p=1;$p<=min($totalPages,12);$p++): ?>
-  <a href="?range=<?=$range?>&date=<?=urlencode($dateStr)?>&action=<?=urlencode($filter)?>&page=<?=$p?>"
+  <a href="?range=<?=$range?>&amp;date=<?=urlencode($dateStr)?>&amp;action=<?=urlencode($filter)?>&amp;page=<?=$p?>"
      class="page-link <?=$p===$page?'active':''?>"><?=$p?></a>
   <?php endfor; ?>
-  <?php if($totalPages>12): ?><span style="color:var(--c-text-hint);padding:0 8px">…<?=$totalPages?></span><?php endif; ?>
+  <?php if($totalPages>12): ?><span style="color:var(--c-text-hint);padding:0 8px">&#8230;<?=$totalPages?></span><?php endif; ?>
 </div>
 <?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-const tRaw = <?=json_encode($trafficChart)?>;
-const oRaw  = <?=json_encode($ordersChart)?>;
-const mode = <?=json_encode($chartMode)?>;
+(function() {
+  var tRaw = <?= json_encode($trafficChart) ?>;
+  var oRaw = <?= json_encode($ordersChart) ?>;
+  var mode = <?= json_encode($chartMode) ?>;
 
-// Build labels
-let labels, tArr, oArr;
-if (mode === 'hourly') {
-  labels = Array.from({length:24},(_,i)=>String(i).padStart(2,'0')+':00');
-  tArr = Array(24).fill(0);
-  oArr = Array(24).fill(0);
-  tRaw.forEach(r=>{ tArr[parseInt(r.lbl)] = parseInt(r.cnt); });
-  oRaw.forEach(r=>{ oArr[parseInt(r.lbl)] = parseInt(r.cnt); });
-} else {
-  const keys = new Set();
-  tRaw.forEach(r=>keys.add(String(r.lbl)));
-  oRaw.forEach(r=>keys.add(String(r.lbl)));
-  labels = Array.from(keys).sort();
-  const tm={}, om={};
-  tRaw.forEach(r=>{ tm[String(r.lbl)]=parseInt(r.cnt); });
-  oRaw.forEach(r=>{ om[String(r.lbl)]=parseInt(r.cnt); });
-  tArr = labels.map(l=>tm[l]||0);
-  oArr = labels.map(l=>om[l]||0);
-}
-
-// Gradient plugin - creates gradient AFTER canvas sized
-const gradientPlugin = {
-  id:'gradients',
-  beforeDatasetsDraw(chart){
-    if(chart._gradientsSet) return;
-    chart._gradientsSet = true;
-    const {ctx, chartArea:{top,bottom}} = chart;
-    const h = bottom - top;
-    const gB = ctx.createLinearGradient(0,top,0,top+h);
-    gB.addColorStop(0,'rgba(66,133,244,0.35)'); gB.addColorStop(1,'rgba(66,133,244,0.02)');
-    const gG = ctx.createLinearGradient(0,top,0,top+h);
-    gG.addColorStop(0,'rgba(52,168,83,0.28)'); gG.addColorStop(1,'rgba(52,168,83,0.02)');
-    chart.data.datasets[0].backgroundColor = gB;
-    chart.data.datasets[1].backgroundColor = gG;
-    chart.update('none');
+  var labels, tArr, oArr;
+  if (mode === 'hourly') {
+    labels = [];
+    for (var i = 0; i < 24; i++) { labels.push((i < 10 ? '0' : '') + i + ':00'); }
+    tArr = new Array(24).fill(0);
+    oArr = new Array(24).fill(0);
+    for (var j = 0; j < tRaw.length; j++) { tArr[parseInt(tRaw[j].lbl)] = parseInt(tRaw[j].cnt); }
+    for (var k = 0; k < oRaw.length; k++) { oArr[parseInt(oRaw[k].lbl)] = parseInt(oRaw[k].cnt); }
+  } else {
+    var keySet = {};
+    for (var a = 0; a < tRaw.length; a++) { keySet[String(tRaw[a].lbl)] = 1; }
+    for (var b = 0; b < oRaw.length; b++) { keySet[String(oRaw[b].lbl)] = 1; }
+    labels = Object.keys(keySet).sort();
+    var tm = {}, om = {};
+    for (var c = 0; c < tRaw.length; c++) { tm[String(tRaw[c].lbl)] = parseInt(tRaw[c].cnt); }
+    for (var d = 0; d < oRaw.length; d++) { om[String(oRaw[d].lbl)] = parseInt(oRaw[d].cnt); }
+    tArr = labels.map(function(l){ return tm[l] || 0; });
+    oArr = labels.map(function(l){ return om[l] || 0; });
   }
-};
 
-const canvas = document.getElementById('mainChart');
-new Chart(canvas, {
-  type:'line',
-  plugins:[gradientPlugin],
-  data:{
-    labels,
-    datasets:[
-      {label:'Traffic Hits',data:tArr,borderColor:'#4285F4',backgroundColor:'rgba(66,133,244,0.2)',
-       fill:true,tension:0.42,pointRadius:labels.length<=24?4:2,pointHoverRadius:7,
-       pointBackgroundColor:'#4285F4',pointBorderColor:'#fff',pointBorderWidth:2,borderWidth:2.5,yAxisID:'yT'},
-      {label:'Orders',data:oArr,borderColor:'#34A853',backgroundColor:'rgba(52,168,83,0.15)',
-       fill:true,tension:0.42,pointRadius:labels.length<=24?4:2,pointHoverRadius:7,
-       pointBackgroundColor:'#34A853',pointBorderColor:'#fff',pointBorderWidth:2,borderWidth:2.5,yAxisID:'yO'}
-    ]
-  },
-  options:{
-    responsive:true,
-    maintainAspectRatio:false,
-    interaction:{mode:'index',intersect:false},
-    plugins:{
-      legend:{display:false},
-      tooltip:{
-        backgroundColor:'rgba(10,10,20,0.9)',titleColor:'#e0e0e0',bodyColor:'#a0a0b0',
-        borderColor:'rgba(255,255,255,0.08)',borderWidth:1,padding:12,cornerRadius:10,
-        callbacks:{
-          title:i=>'⏱ '+i[0].label,
-          label:i=>' '+(i.datasetIndex===0?'📈':'🛒')+' '+i.dataset.label+': '+i.formattedValue
+  var canvas = document.getElementById('mainChart');
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Traffic Hits',
+          data: tArr,
+          borderColor: '#4285F4',
+          backgroundColor: 'rgba(66,133,244,0.15)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#4285F4',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          borderWidth: 2.5
+        },
+        {
+          label: 'Orders',
+          data: oArr,
+          borderColor: '#34A853',
+          backgroundColor: 'rgba(52,168,83,0.12)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#34A853',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          borderWidth: 2.5,
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15,15,25,0.92)',
+          titleColor: '#e0e0e0',
+          bodyColor: '#aaa',
+          borderColor: 'rgba(255,255,255,0.08)',
+          borderWidth: 1,
+          padding: 12,
+          cornerRadius: 10
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(128,128,128,0.08)' },
+          ticks: { color: '#6b7280', font: { size: 11 }, maxTicksLimit: 12, maxRotation: 30 }
+        },
+        y: {
+          beginAtZero: true,
+          position: 'left',
+          grid: { color: 'rgba(128,128,128,0.06)' },
+          ticks: { color: '#4285F4', font: { size: 11 }, precision: 0 }
+        },
+        y2: {
+          beginAtZero: true,
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { color: '#34A853', font: { size: 11 }, precision: 0 }
         }
       }
-    },
-    scales:{
-      x:{grid:{color:'rgba(128,128,128,0.1)'},
-         ticks:{color:'#6b7280',font:{size:11},maxTicksLimit:mode==='6month'?6:12,maxRotation:30}},
-      yT:{position:'left',beginAtZero:true,grid:{color:'rgba(128,128,128,0.08)'},
-          ticks:{color:'#4285F4',font:{size:11},precision:0},
-          title:{display:true,text:'Hits',color:'#4285F4',font:{size:11}}},
-      yO:{position:'right',beginAtZero:true,grid:{drawOnChartArea:false},
-          ticks:{color:'#34A853',font:{size:11},precision:0},
-          title:{display:true,text:'Orders',color:'#34A853',font:{size:11}}}
     }
-  }
-});
+  });
+})();
 </script>
 
 <?php require __DIR__ . '/partials/footer.php'; ?>

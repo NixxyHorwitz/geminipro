@@ -12,24 +12,6 @@ $flashType = 'success';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    if ($action === 'save_product') {
-        $price = (int) preg_replace('/\D/', '', $_POST['product_price'] ?? '0');
-        $name  = htmlspecialchars(trim($_POST['product_name'] ?? 'Google AI Pro'));
-        $dur   = (int) ($_POST['product_duration'] ?? 12);
-        $timeout = (int) ($_POST['payment_timeout'] ?? 15);
-
-        if ($price < 1000) {
-            $flash = 'Harga minimal Rp 1.000';
-            $flashType = 'error';
-        } else {
-            Config::set($pdo, 'product_price', (string) $price);
-            Config::set($pdo, 'product_name', $name);
-            Config::set($pdo, 'product_duration', (string) $dur);
-            Config::set($pdo, 'payment_timeout_minutes', (string) $timeout);
-            $flash = 'Pengaturan produk berhasil disimpan!';
-        }
-    }
-
     if ($action === 'save_site') {
         $siteUrl = rtrim(trim($_POST['site_url'] ?? ''), '/');
         if (empty($siteUrl)) {
@@ -54,10 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 Config::loadFromDb($pdo);
 
 $settings = [
-    'product_price'            => Config::get('product_price', '309000'),
-    'product_name'             => Config::get('product_name', 'Google AI Pro'),
-    'product_duration'         => Config::get('product_duration', '12'),
-    'payment_timeout_minutes'  => Config::get('payment_timeout_minutes', '15'),
     'site_url'                 => Config::get('site_url', ''),
 ];
 
@@ -78,39 +56,7 @@ require __DIR__ . '/partials/header.php';
 <?php endif; ?>
 
 <div class="two-col-grid">
-  <!-- Product settings -->
-  <div class="card">
-    <div class="card__header">
-      <div class="card__title">Pengaturan Produk</div>
-    </div>
-    <div class="card__body">
-      <form method="POST">
-        <?= csrf_field() ?>
-        <input type="hidden" name="action" value="save_product">
-        <div class="form-group">
-          <label class="form-label">Nama Produk</label>
-          <input type="text" name="product_name" class="form-control" value="<?= htmlspecialchars($settings['product_name']) ?>">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Harga (IDR)</label>
-          <div class="input-prefix-wrap">
-            <span class="input-prefix">Rp</span>
-            <input type="number" name="product_price" class="form-control" value="<?= $settings['product_price'] ?>" min="1000">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Durasi (bulan)</label>
-          <input type="number" name="product_duration" class="form-control" value="<?= $settings['product_duration'] ?>" min="1" max="60">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Batas Waktu Pembayaran (menit)</label>
-          <input type="number" name="payment_timeout" class="form-control" value="<?= $settings['payment_timeout_minutes'] ?>" min="5" max="60">
-          <div class="form-hint">Order otomatis expired setelah tidak punya bayaran dalam waktu ini</div>
-        </div>
-        <button type="submit" class="btn btn--primary">Simpan Produk</button>
-      </form>
-    </div>
-  </div>
+
 
   <!-- Site settings -->
   <div class="card">

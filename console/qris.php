@@ -39,22 +39,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($action === 'save_product') {
+        $price = (int) preg_replace('/\D/', '', $_POST['product_price'] ?? '0');
+        $name  = htmlspecialchars(trim($_POST['product_name'] ?? 'Google AI Pro'));
+        $dur   = (int) ($_POST['product_duration'] ?? 12);
+        $timeout = (int) ($_POST['payment_timeout'] ?? 15);
+        $uniqueEnabled = isset($_POST['unique_fee_enabled']) ? '1' : '0';
+        $uniqueMin = (int) ($_POST['unique_fee_min'] ?? 1);
+        $uniqueMax = (int) ($_POST['unique_fee_max'] ?? 999);
+
+        if ($price < 1000) {
+            $flash = 'Harga minimal Rp 1.000';
+            $flashType = 'error';
+        } else {
+            Config::set($pdo, 'product_price', (string) $price);
+            Config::set($pdo, 'product_name', $name);
+            Config::set($pdo, 'product_duration', (string) $dur);
+            Config::set($pdo, 'payment_timeout_minutes', (string) $timeout);
+            Config::set($pdo, 'unique_fee_enabled', $uniqueEnabled);
+            Config::set($pdo, 'unique_fee_min', (string) $uniqueMin);
+            Config::set($pdo, 'unique_fee_max', (string) $uniqueMax);
+            $flash = 'Pengaturan produk dan biaya layanan berhasil disimpan!';
+        }
+    }
+
     if ($action === 'test_qris' && $active) {
-        $amount = (int) Config::get('product_price', 309000);
+        $amount = (int) preg_replace('/\D/', '', $_POST['test_amount'] ?? '10000');
         $dynamic = QrisHelper::setAmount($active['raw_string'], $amount);
         $img = QrisHelper::generateQrImage($dynamic, 200);
         $qrisInfo = ['img' => $img, 'dynamic' => $dynamic, 'amount' => $amount];
     }
 }
 
-$pageTitle  = 'Set QRIS';
+Config::loadFromDb($pdo);
+$settings = [
+    'product_price'            => Config::get('product_price', '309000'),
+    'product_name'             => Config::get('product_name', 'Google AI Pro'),
+    'product_duration'         => Config::get('product_duration', '12'),
+    'payment_timeout_minutes'  => Config::get('payment_timeout_minutes', '15'),
+    'unique_fee_enabled'       => Config::get('unique_fee_enabled', '0'),
+    'unique_fee_min'           => Config::get('unique_fee_min', '1'),
+    'unique_fee_max'           => Config::get('unique_fee_max', '999'),
+];
+
+$pageTitle  = 'Payment & Method';
 $activePage = 'qris';
 require __DIR__ . '/partials/header.php';
 ?>
 
 <div class="page-header">
-  <h1 class="page-title">Konfigurasi QRIS</h1>
-  <p class="page-sub">Upload atau paste raw string QRIS untuk pembayaran dinamis</p>
+  <h1 class="page-title">Payment & Method</h1>
+  <p class="page-sub">Konfigurasi produk, QRIS, dan biaya layanan (Unique Fee)</p>
 </div>
 
 <?php if ($flash): ?>
@@ -81,12 +116,13 @@ require __DIR__ . '/partials/header.php';
         <div class="info-row"><span>Ditambahkan</span><strong><?= date('d M Y H:i', strtotime($active['created_at'])) ?></strong></div>
         <div class="info-row"><span>Raw String (50 char)</span><code style="font-size:11px;word-break:break-all"><?= htmlspecialchars(substr($active['raw_string'], 0, 50)) ?>...</code></div>
         
-        <form method="POST" style="margin-top:20px">
+        <form method="POST" style="margin-top:20px;display:flex;gap:8px">
           <?= csrf_field() ?>
           <input type="hidden" name="action" value="test_qris">
-          <button type="submit" class="btn btn--outline btn--full">
+          <input type="number" name="test_amount" class="form-control" placeholder="Nominal" required style="width:120px">
+          <button type="submit" class="btn btn--outline" style="flex:1">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Test Generate QR Code
+            Test Generate
           </button>
         </form>
 
@@ -138,7 +174,65 @@ require __DIR__ . '/partials/header.php';
       </form>
     </div>
   </div>
+</div>
 
+<div class="card" style="margin-top:16px">
+  <div class="card__header">
+    <div class="card__title">Pengaturan Produk & Biaya Layanan</div>
+  </div>
+  <div class="card__body">
+    <form method="POST">
+      <?= csrf_field() ?>
+      <input type="hidden" name="action" value="save_product">
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <div class="form-group">
+          <label class="form-label">Nama Produk</label>
+          <input type="text" name="product_name" class="form-control" value="<?= htmlspecialchars($settings['product_name']) ?>">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Harga (IDR)</label>
+          <div class="input-prefix-wrap">
+            <span class="input-prefix">Rp</span>
+            <input type="number" name="product_price" class="form-control" value="<?= $settings['product_price'] ?>" min="1000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Durasi (bulan)</label>
+          <input type="number" name="product_duration" class="form-control" value="<?= $settings['product_duration'] ?>" min="1" max="60">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Batas Waktu Pembayaran (menit)</label>
+          <input type="number" name="payment_timeout" class="form-control" value="<?= $settings['payment_timeout_minutes'] ?>" min="5" max="60">
+        </div>
+      </div>
+      
+      <div class="divider" style="margin:24px 0"></div>
+      
+      <div class="card__title" style="margin-bottom:12px;font-size:15px">Sistem Kode Unik (Fee Service)</div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:12px">
+          <input type="checkbox" name="unique_fee_enabled" value="1" <?= $settings['unique_fee_enabled'] === '1' ? 'checked' : '' ?> style="width:16px;height:16px;cursor:pointer">
+          <span style="font-weight:600">Aktifkan Kode Unik Pembayaran</span>
+        </label>
+        <div class="form-hint">Sistem akan menambahkan angka unik secara acak di 3 digit terakhir nominal (contoh: Rp 309.123). Berguna untuk membedakan transaksi dan menambah pendapatan ekstra (fee).</div>
+      </div>
+      
+      <div style="display:flex;gap:16px;align-items:center;margin-top:16px">
+        <div class="form-group" style="flex:1;margin:0">
+          <label class="form-label">Range Unik Minimum</label>
+          <input type="number" name="unique_fee_min" class="form-control" value="<?= $settings['unique_fee_min'] ?>" min="1" max="998">
+        </div>
+        <div style="padding-top:24px;font-weight:bold;color:var(--c-text-hint)">—</div>
+        <div class="form-group" style="flex:1;margin:0">
+          <label class="form-label">Range Unik Maksimum</label>
+          <input type="number" name="unique_fee_max" class="form-control" value="<?= $settings['unique_fee_max'] ?>" min="2" max="999">
+        </div>
+      </div>
+      
+      <button type="submit" class="btn btn--primary" style="margin-top:24px">Simpan Pengaturan Produk</button>
+    </form>
+  </div>
 </div>
 
 <div class="card" style="margin-top:16px">

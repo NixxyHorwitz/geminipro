@@ -32,6 +32,7 @@ $order  = new Order($pdo);
 
 $price    = (int) Config::get('product_price', 309000);
 $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
+$uniqueFeeEnabled = Config::get('unique_fee_enabled', '0') === '1';
 $step     = (int) ($_GET['step'] ?? 1);
 $errors   = [];
 
@@ -108,12 +109,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     if (empty($errors)) {
         try {
+            $finalPrice = $price;
+            if ($uniqueFeeEnabled) {
+                $min = (int) Config::get('unique_fee_min', 1);
+                $max = (int) Config::get('unique_fee_max', 999);
+                if ($max >= $min) {
+                    $finalPrice += mt_rand($min, $max);
+                }
+            }
+
             $data = [
                 'email'            => $email,
                 'method'           => $method,
                 'sso_email'        => null,
                 'activation_email' => $email,
-                'amount'           => $price,
+                'amount'           => $finalPrice,
                 'ip_address'       => \App\Logger::getIp(),
                 'user_agent'       => $_SERVER['HTTP_USER_AGENT'] ?? '',
             ];
@@ -128,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     $text = "🔔 *PESANAN BARU (PENDING)*\n\n"
                           . "Order Code: `{$newOrder['order_code']}`\n"
                           . "Email: {$email}\n"
-                          . "Nominal: Rp " . number_format($price, 0, ',', '.') . "\n\n"
+                          . "Nominal: Rp " . number_format($finalPrice, 0, ',', '.') . "\n\n"
                           . "Balas chat ini dengan `{$newOrder['order_code']}` untuk mengonfirmasi pembayaran jika saldo QRIS sudah masuk.";
                     
                     $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
@@ -180,6 +190,19 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     $doneOrder = $code ? $order->findByCode($code) : null;
     $step      = 3;
 }
+
+// Calculate display prices for summary
+$displayPrice = $price;
+$feeAmount = 0;
+if ($currentOrder) {
+    $displayPrice = (int)$currentOrder['amount'];
+    $feeAmount = $displayPrice - $price;
+} elseif ($doneOrder) {
+    $displayPrice = (int)$doneOrder['amount'];
+    $feeAmount = $displayPrice - $price;
+}
+$displayPriceStr = 'Rp ' . number_format($displayPrice, 0, ',', '.');
+$feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -289,7 +312,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
           <div class="qris-badge">QRIS</div>
           Nasional &middot; Semua E-Wallet
         </div>
-        <div class="qris-amount" id="qris-amount"><?= $priceStr ?></div>
+        <div class="qris-amount" id="qris-amount"><?= $displayPriceStr ?></div>
         <div class="qris-amount-label">Total yang harus dibayar</div>
       </div>
 
@@ -382,6 +405,12 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
       <span class="order-line__label">Harga untuk 12 bulan</span>
       <span class="order-line__value"><?= $priceStr ?></span>
     </div>
+    <?php if ($feeAmount > 0): ?>
+    <div class="order-line">
+      <span class="order-line__label">Fee Service / Kode Unik</span>
+      <span class="order-line__value" style="color:var(--c-blue)">+ <?= $feeAmountStr ?></span>
+    </div>
+    <?php endif; ?>
     <div class="order-line">
       <span class="order-line__label">Promo bulan pertama</span>
       <span class="order-line__value" style="color:var(--c-green)">Rp 0</span>
@@ -396,7 +425,7 @@ if ($step === 3 || isset($_GET['step']) && $_GET['step'] === 'done') {
     </div>
     <div class="order-total">
       <span>Total</span>
-      <span class="order-total__price"><?= $priceStr ?></span>
+      <span class="order-total__price"><?= $displayPriceStr ?></span>
     </div>
 
     <div class="checkout-trust">

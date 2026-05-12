@@ -293,10 +293,10 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 </section>
 
 <!-- TESTIMONIALS -->
-<section style="background:var(--c-bg-alt);border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border);padding:72px 24px">
-  <div style="max-width:1000px;margin:0 auto">
-    <h2 style="text-align:center;margin-bottom:8px">Apa Kata Pengguna Kami</h2>
-    <p style="text-align:center;color:var(--c-text-sec);font-size:16px;margin-bottom:48px">Lebih dari 1.200 pengguna telah merasakan manfaatnya</p>
+<section class="testi-section">
+  <div class="testi-section-inner">
+    <h2>Apa Kata Pengguna Kami</h2>
+    <p class="subtitle">Lebih dari 1.200 pengguna telah merasakan manfaatnya</p>
     <div class="testi-grid">
       <div class="testi-card">
         <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
@@ -318,8 +318,8 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 </section>
 
 <!-- FAQ -->
-<section style="padding:0 24px 80px;max-width:720px;margin:0 auto">
-  <h2 style="text-align:center;margin-bottom:32px">FAQ</h2>
+<section class="faq-section">
+  <h2>FAQ</h2>
   <div id="faq-list"></div>
   <?php
   $faqs = [
@@ -331,20 +331,20 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   ];
   foreach ($faqs as [$q, $a]):
   ?>
-  <details style="border:1px solid var(--c-border);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden;cursor:pointer">
-    <summary style="padding:16px 20px;font-size:14px;font-weight:500;display:flex;justify-content:space-between;align-items:center;user-select:none">
+  <details>
+    <summary>
       <?= $q ?>
-      <span style="font-size:18px;color:var(--c-text-sec);flex-shrink:0">+</span>
+      <span class="faq-icon">+</span>
     </summary>
-    <div style="padding:0 20px 16px;font-size:14px;color:var(--c-text-sec)"><?= $a ?></div>
+    <div class="faq-body"><?= $a ?></div>
   </details>
   <?php endforeach; ?>
 </section>
 
 <!-- FOOTER -->
 <footer class="footer">
-  <p>Â© <?= date('Y') ?> Google AI Pro Reseller. Bukan afiliasi resmi Google LLC.</p>
-  <p style="margin-top:6px"><a href="#">Syarat & Ketentuan</a> · <a href="#">Kebijakan Privasi</a> Â</p>
+  <p>&copy; <?= date('Y') ?> Google AI Pro Reseller. Bukan afiliasi resmi Google LLC.</p>
+  <p style="margin-top:8px"><a href="#">Syarat &amp; Ketentuan</a> &middot; <a href="#">Kebijakan Privasi</a></p>
 </footer>
 
 <script>
@@ -365,7 +365,8 @@ document.querySelectorAll('.feature-card,.fade-up').forEach(el => observer.obser
 // details toggle icon
 document.querySelectorAll('details').forEach(d => {
   d.addEventListener('toggle', () => {
-    d.querySelector('span').textContent = d.open ? '−' : '+';
+    const icon = d.querySelector('.faq-icon');
+    if (icon) icon.textContent = d.open ? '−' : '+';
   });
 });
 </script>

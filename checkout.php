@@ -277,7 +277,7 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
   </nav>
 </header>
 
-<div style="max-width:960px;margin:0 auto;padding:0 0 40px">
+<div class="checkout-wrapper">
 <div class="checkout-layout">
 
   <!-- ============================================================ -->
@@ -365,11 +365,9 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
         Jika sudah bayar namun belum dikonfirmasi dalam 15 menit, hubungi admin via Threads dengan kode order dan bukti pembayaran Anda.
       </div>
 
-      <div style="text-align:center;margin-top:12px">
-        <div style="font-size:13px;color:var(--c-text-sec);margin-bottom:8px">Kode Order Anda:</div>
-        <code style="font-size:18px;font-weight:700;color:var(--c-text-primary);letter-spacing:.1em">
-          <?= htmlspecialchars($currentOrder['order_code']) ?>
-        </code>
+      <div class="order-code-box">
+        <div class="order-code-label">Kode Order Anda:</div>
+        <div class="order-code-value"><?= htmlspecialchars($currentOrder['order_code']) ?></div>
       </div>
 
       <div style="margin-top:24px">
@@ -392,9 +390,9 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
         <p style="color:var(--c-text-sec);margin-bottom:24px">
           Terima kasih! Link aktivasi Google AI Pro telah dikirim ke email Anda.
         </p>
-        <div style="background:var(--c-green-light);border:1px solid #a8d5b5;border-radius:var(--radius-md);padding:20px;text-align:left;margin-bottom:24px">
-          <div style="font-size:13px;color:var(--c-text-sec);margin-bottom:4px">Email tujuan aktivasi:</div>
-          <div style="font-size:16px;font-weight:600"><?= htmlspecialchars($doneOrder['email']) ?></div>
+        <div class="success-info">
+          <div class="success-info__label">Email tujuan aktivasi:</div>
+          <div class="success-info__value"><?= htmlspecialchars($doneOrder['email']) ?></div>
         </div>
         <a href="/" class="btn btn--primary btn--lg">Kembali ke Beranda</a>
       </div>
@@ -408,9 +406,9 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
           Pembayaran Anda sedang diverifikasi oleh admin. Proses biasanya 1–5 menit.
         </p>
         <?php if ($doneOrder): ?>
-        <div style="background:var(--c-blue-light);border:1px solid #c6d9f8;border-radius:var(--radius-md);padding:20px;margin-bottom:24px">
-          <div style="font-size:13px;color:var(--c-text-sec)">Kode Order:</div>
-          <code style="font-size:20px;font-weight:700;color:var(--c-blue)"><?= htmlspecialchars($doneOrder['order_code']) ?></code>
+        <div class="pending-code-box">
+          <div class="label">Kode Order:</div>
+          <code><?= htmlspecialchars($doneOrder['order_code']) ?></code>
         </div>
         <?php endif; ?>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
@@ -486,9 +484,9 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
     </div>
 
     <!-- Accepted wallets -->
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--c-border)">
-      <div style="font-size:11px;font-weight:700;color:var(--c-text-hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Diterima via QRIS</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px">
+    <div class="wallets-section">
+      <div class="wallets-label">Diterima via QRIS</div>
+      <div class="wallets-grid">
         <?php foreach (['GoPay','OVO','DANA','ShopeePay','LinkAja','BCA','BRI','BNI','Mandiri','BSI'] as $w): ?>
         <span class="wallet-pill"><?= $w ?></span>
         <?php endforeach; ?>

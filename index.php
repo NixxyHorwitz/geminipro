@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 use App\Config;
@@ -93,11 +93,15 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     <div style="display:flex;gap:2px"><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span></div>
     <span style="font-size:13px;color:var(--c-text-sec);font-weight:500">4.9/5 dari <strong style="color:var(--c-text-primary)">1.200+</strong> pengguna aktif</span>
   </div>
-  <!-- Gift info badge -->
-  <div class="fade-up fade-up--4" style="margin-top:20px;display:flex;justify-content:center">
-    <div style="display:inline-flex;align-items:center;gap:10px;background:#e8f0fe;border:1px solid #c6d9f8;border-radius:12px;padding:10px 20px;font-size:13px;color:#1a73e8;font-weight:500">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.31.18-.62.18-.97C18 3.35 16.65 2 15.03 2c-.98 0-1.84.49-2.35 1.22L12 4.21l-.68-.99C10.81 2.49 9.95 2 8.97 2 7.35 2 6 3.35 6 4.97c0 .36.11.67.18.97H4c-1.11 0-2 .89-2 2v1c0 .57.43 1 1 1h18c.57 0 1-.43 1-1V8c0-1.11-.89-2-2-2zm-5-.03c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM9 5.03c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zM4 11v8c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2v-8H4zm6 7H6v-5h4v5zm8 0h-4v-5h4v5z"/></svg>
-      Aktivasi via <strong style="margin:0 3px">Google Gift</strong> — dikirim langsung ke email Anda
+  <!-- Hero badges -->
+  <div class="fade-up fade-up--4" style="margin-top:24px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
+    <div class="hero-badge">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.31.18-.62.18-.97C18 3.35 16.65 2 15.03 2c-.98 0-1.84.49-2.35 1.22L12 4.21l-.68-.99C10.81 2.49 9.95 2 8.97 2 7.35 2 6 3.35 6 4.97c0 .36.11.67.18.97H4c-1.11 0-2 .89-2 2v1c0 .57.43 1 1 1h18c.57 0 1-.43 1-1V8c0-1.11-.89-2-2-2zm-5-.03c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM9 5.03c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zM4 11v8c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2v-8H4zm6 7H6v-5h4v5zm8 0h-4v-5h4v5z"/></svg>
+      Dikirim via <strong>Google Gift Offer</strong> ke email Anda
+    </div>
+    <div class="hero-badge hero-badge--green">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+      Akun Pribadi &mdash; Bukan shared/bersama
     </div>
   </div>
 </section>
@@ -272,14 +276,25 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 <!-- HOW IT WORKS -->
 <section class="how-section">
   <h2>Cara Kerja</h2>
-  <p class="subtitle">Proses mudah, aktivasi cepat dalam hitungan menit</p>
+  <p class="subtitle">Proses sederhana — Google AI Pro langsung aktif di akun pribadi Anda</p>
+
+  <div class="private-callout">
+    <div class="private-callout__icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+    </div>
+    <div>
+      <div class="private-callout__title">Akun Pribadi — Bukan Shared Account</div>
+      <div class="private-callout__sub">Google AI Pro Plan ini bersifat <strong>private</strong>. Langganan masuk langsung ke akun Google Anda sendiri via undangan resmi — bukan akun bersama, bukan password sharing, dan tidak ada orang lain yang menggunakan akun Anda.</div>
+    </div>
+  </div>
+
   <div class="steps-grid">
     <?php
     $steps = [
-      ['1','Masukkan Email','Isi alamat email tujuan aktivasi Anda'],
-      ['2','Bayar QRIS','Scan QR Code via e-wallet pilihan Anda'],
-      ['3','Cek Otomatis','Sistem otomatis memverifikasi pembayaran Anda'],
-      ['4','Gift Terkirim!','Google AI Pro dikirim sebagai Gift ke email Anda'],
+      ['1','Masukkan Email Tujuan','Isi alamat Gmail yang akan menerima undangan Google AI Pro Plan'],
+      ['2','Lakukan Pembayaran','Scan QRIS via GoPay, OVO, DANA, atau e-wallet lainnya'],
+      ['3','Verifikasi Otomatis','Sistem memverifikasi pembayaran Anda secara real-time'],
+      ['4','Cek Inbox Gmail','Email Gift Offer dari Google tiba dalam 1–10 menit. Klik "Claim Offer" dan selesai!'],
     ];
     foreach ($steps as [$n, $t, $d]):
     ?>
@@ -290,28 +305,48 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     </div>
     <?php endforeach; ?>
   </div>
+
+  <div class="gift-explainer">
+    <div class="gift-explainer__icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+    </div>
+    <div>
+      <div class="gift-explainer__title">Bagaimana email Gift Offer dari Google bekerja?</div>
+      <div class="gift-explainer__text">Setelah pembayaran terkonfirmasi, Google akan mengirim email resmi bertajuk <strong>"You have a new Google One offer"</strong> ke Gmail Anda. Klik tombol <strong>"Claim offer"</strong> di dalam email, dan Google AI Pro langsung aktif pada akun Anda — tanpa perlu memasukkan password atau data apapun selain email tujuan.</div>
+    </div>
+  </div>
 </section>
+
 
 <!-- TESTIMONIALS -->
 <section class="testi-section">
   <div class="testi-section-inner">
     <h2>Apa Kata Pengguna Kami</h2>
     <p class="subtitle">Lebih dari 1.200 pengguna telah merasakan manfaatnya</p>
-    <div class="testi-grid">
+        <div class="testi-grid">
       <div class="testi-card">
-        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="testi-text">“Aktivasi super cepat! Ga sampe 5 menit langsung bisa pakai Gemini Pro. Harganya juga jauh lebih hemat dibanding beli sendiri.”</div>
-        <div class="testi-author"><div class="testi-avatar">A</div><div><div class="testi-name">Andi Samudra.</div><div class="testi-loc">Jakarta</div></div></div>
+        <div class="testi-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <div class="testi-text">"Prosesnya gampang banget. Masukin email, bayar QRIS, tunggu sebentar -- langsung ada email dari Google masuk. Klik Claim Offer, selesai. Gemini Pro langsung aktif di akun saya sendiri."</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:rgba(66,133,244,.18);color:#4285F4">R</div>
+          <div><div class="testi-name">Rizky Firmansyah</div><div class="testi-loc">Jakarta &middot; Content Creator</div></div>
+        </div>
       </div>
       <div class="testi-card">
-        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="testi-text">“Awalnya ragu, tapi ternyata legit banget. Link-nya asli dari Google, langsung kena ke akun saya. CS-nya ramah dan responsif.”</div>
-        <div class="testi-author"><div class="testi-avatar" style="background:#e6f4ea;color:#34a853">S</div><div><div class="testi-name">sasxxxwjyo@gmail.com.</div><div class="testi-loc">Surabaya</div></div></div>
+        <div class="testi-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <div class="testi-text">"Tadinya khawatir ini shared account atau gimana, tapi ternyata beneran masuk ke akun Google saya sendiri. Emailnya langsung dari Google. Satu klik, langsung aktif. Recommended!"</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:rgba(52,201,122,.18);color:#34c97a">D</div>
+          <div><div class="testi-name">Dwi Oktavia</div><div class="testi-loc">Surabaya &middot; Freelance Designer</div></div>
+        </div>
       </div>
       <div class="testi-card">
-        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="testi-text">“Udah langganan 3x, gak pernah ada masalah. Selalu on-time dan fitur Veo buat bikin video keren banget buat konten saya.”</div>
-        <div class="testi-author"><div class="testi-avatar" style="background:#fff8e1;color:#f29900">B</div><div><div class="testi-name">Budi W.</div><div class="testi-loc">Bandung</div></div></div>
+        <div class="testi-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <div class="testi-text">"Sudah 2 kali perpanjang, selalu lancar. Veo buat bikin video klien jauh lebih cepat, Deep Research juga ngebantu banget buat riset. Harganya jauh lebih terjangkau dari langganan langsung ke Google."</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:rgba(251,191,36,.18);color:#d97706">H</div>
+          <div><div class="testi-name">Hendra Kusuma</div><div class="testi-loc">Bandung &middot; Digital Marketer</div></div>
+        </div>
       </div>
     </div>
   </div>

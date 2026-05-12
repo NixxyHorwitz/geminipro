@@ -85,9 +85,10 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
   <p class="hero__subtitle fade-up fade-up--2">
     Gemini 3.1 Pro · Deep Research · Veo 3.1 · 5 TB Storage · 1.000 AI Credits/bulan dan masih banyak lagi — semua dalam satu paket.
   </p>
-  <div class="fade-up fade-up--3" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a href="#pricing" class="btn btn--primary btn--lg" id="hero-cta">Mulai Sekarang — <?= $priceStr ?></a>
-    <a href="#features" class="btn btn--ghost btn--lg">Lihat Semua Fitur</a>
+    <div class="hero__actions fade-up fade-up--3">
+    <a href="#pricing" class="btn btn--primary btn--md" id="hero-cta">Beli Sekarang &mdash; <?= $priceStr ?></a>
+    <a href="#how-it-works" class="btn btn--ghost btn--md"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg> Cara Kerja</a>
+    <a href="#features" class="btn btn--ghost btn--md">Lihat Fitur</a>
   </div>
   <div class="fade-up fade-up--4" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px">
     <div style="display:flex;gap:2px"><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span><span style="color:#fbbc04;font-size:16px">★</span></div>
@@ -274,7 +275,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="how-section">
+<section class="how-section" id="how-it-works">
   <h2>Cara Kerja</h2>
   <p class="subtitle">Proses sederhana — Google AI Pro langsung aktif di akun pribadi Anda</p>
 
@@ -377,7 +378,16 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 </section>
 
 <!-- FOOTER -->
+<?php $tgContact = Config::get('telegram_contact', ''); ?>
 <footer class="footer">
+    <?php if ($tgContact): ?>
+  <div class="footer__telegram">
+    <a href="https://t.me/<?= htmlspecialchars(ltrim($tgContact, '@')) ?>" target="_blank" rel="noopener" class="footer__tg-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      Hubungi Admin via Telegram: <strong>@<?= htmlspecialchars(ltrim($tgContact, '@')) ?></strong>
+    </a>
+  </div>
+  <?php endif; ?>
   <p>&copy; <?= date('Y') ?> Google AI Pro Reseller. Bukan afiliasi resmi Google LLC.</p>
   <p style="margin-top:8px"><a href="#">Syarat &amp; Ketentuan</a> &middot; <a href="#">Kebijakan Privasi</a></p>
 </footer>

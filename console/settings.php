@@ -24,6 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($action === 'save_contact') {
+        $tg = trim($_POST['telegram_contact'] ?? '');
+        Config::set($pdo, 'telegram_contact', $tg);
+        $flash = 'Kontak Telegram berhasil disimpan!';
+    }
+
     if ($action === 'clear_logs') {
         $days = (int) ($_POST['days'] ?? 30);
         $pdo->exec("DELETE FROM traffic_logs WHERE created_at < DATE_SUB(NOW(), INTERVAL {$days} DAY)");
@@ -36,7 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 Config::loadFromDb($pdo);
 
 $settings = [
-    'site_url'                 => Config::get('site_url', ''),
+    'site_url'         => Config::get('site_url', ''),
+    'telegram_contact' => Config::get('telegram_contact', ''),
 ];
 
 $pageTitle  = 'Settings';
@@ -88,6 +95,27 @@ require __DIR__ . '/partials/header.php';
           <span style="font-size:14px;white-space:nowrap">hari</span>
         </div>
         <button type="submit" class="btn btn--danger btn--sm" style="margin-top:12px">Hapus Log Lama</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contact settings -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">Kontak &amp; Support</div>
+    </div>
+    <div class="card__body">
+      <form method="POST">
+        <?= csrf_field() ?>
+        <input type="hidden" name="action" value="save_contact">
+        <div class="form-group">
+          <label class="form-label">Username Telegram Admin</label>
+          <input type="text" name="telegram_contact" class="form-control"
+                 value="<?= htmlspecialchars($settings['telegram_contact']) ?>"
+                 placeholder="@username atau username">
+          <div class="form-hint">Ditampilkan di footer website sebagai tombol hubungi admin. Kosongkan untuk menyembunyikan.</div>
+        </div>
+        <button type="submit" class="btn btn--primary">Simpan Kontak</button>
       </form>
     </div>
   </div>

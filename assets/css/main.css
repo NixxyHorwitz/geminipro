@@ -716,6 +716,27 @@ details[open] .faq-icon { transform: rotate(45deg); }
 }
 .footer a { color: var(--text-2); transition: color var(--transition); }
 .footer a:hover { color: var(--blue); }
+.footer__telegram { margin-bottom: 16px; }
+.footer__tg-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(79,142,247,.08);
+  border: 1px solid rgba(79,142,247,.18);
+  border-radius: 100px;
+  padding: 9px 20px;
+  font-size: 13px;
+  color: #93b8f5;
+  font-weight: 500;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.footer__tg-link:hover {
+  background: rgba(79,142,247,.15);
+  border-color: rgba(79,142,247,.35);
+  color: var(--blue);
+}
+.footer__tg-link svg { flex-shrink: 0; }
 
 /* ── FADE-UP ANIMATIONS ───────────────────────────────────── */
 .fade-up { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }

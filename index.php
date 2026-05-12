@@ -222,10 +222,10 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
 <!-- SECURITY BADGES -->
 <div class="security-section">
   <div class="security-section__inner">
-    <div class="sec-badge"><div class="sec-badge__icon">🔒</div><div class="sec-badge__text"><div class="sec-badge__title">Pembayaran Aman</div><div class="sec-badge__sub">Diproses via QRIS resmi BI</div></div></div>
-    <div class="sec-badge"><div class="sec-badge__icon">✅</div><div class="sec-badge__text"><div class="sec-badge__title">Reseller Terverifikasi</div><div class="sec-badge__sub">Link aktivasi asli dari Google</div></div></div>
-    <div class="sec-badge"><div class="sec-badge__icon">💬</div><div class="sec-badge__text"><div class="sec-badge__title">Support 24/7</div><div class="sec-badge__sub">Resp. cepat via Telegram</div></div></div>
-    <div class="sec-badge"><div class="sec-badge__icon">🔄</div><div class="sec-badge__text"><div class="sec-badge__title">Garansi 7 Hari</div><div class="sec-badge__sub">Refund penuh jika gagal aktif</div></div></div>
+    <div class="sec-badge"><div class="sec-badge__icon" style="background:rgba(79,142,247,.12);color:#4f8ef7"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm0 4l4 2v4c0 3.1-2.12 5.99-4 6.82-1.88-.83-4-3.72-4-6.82V8l4-2z"/></svg></div><div class="sec-badge__text"><div class="sec-badge__title">Pembayaran Aman</div><div class="sec-badge__sub">Diproses via QRIS resmi BI</div></div></div>
+    <div class="sec-badge"><div class="sec-badge__icon" style="background:rgba(52,201,122,.12);color:#34c97a"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div><div class="sec-badge__text"><div class="sec-badge__title">Reseller Terverifikasi</div><div class="sec-badge__sub">Link aktivasi asli dari Google</div></div></div>
+    <div class="sec-badge"><div class="sec-badge__icon" style="background:rgba(167,139,250,.12);color:#a78bfa"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div><div class="sec-badge__text"><div class="sec-badge__title">Support 24/7</div><div class="sec-badge__sub">Resp. cepat via Telegram</div></div></div>
+    <div class="sec-badge"><div class="sec-badge__icon" style="background:rgba(251,191,36,.12);color:#fbbf24"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm1 15.5h-2v-2h2v2zm0-4h-2v-6h2v6z"/></svg></div><div class="sec-badge__text"><div class="sec-badge__title">Garansi 7 Hari</div><div class="sec-badge__sub">Refund penuh jika gagal aktif</div></div></div>
   </div>
 </div>
 

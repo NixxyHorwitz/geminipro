@@ -377,7 +377,15 @@ h2 {
   flex: 1 1 200px;
   max-width: 280px;
 }
-.sec-badge__icon { font-size: 24px; flex-shrink: 0; }
+.sec-badge__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .sec-badge__title { font-size: 14px; font-weight: 700; color: var(--text); }
 .sec-badge__sub   { font-size: 12px; color: var(--text-2); margin-top: 2px; }
 

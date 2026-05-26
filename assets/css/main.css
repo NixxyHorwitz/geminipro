@@ -185,9 +185,8 @@ body > * { position: relative; z-index: 1; }
   margin-bottom: 24px;
   color: #0f172a;
 }
-.hero__title span {
-  color: #4285F4;
-  -webkit-text-fill-color: #4285F4;
+.hero__title .google-text span {
+  -webkit-text-fill-color: initial;
 }
 .hero__subtitle {
   font-size: clamp(15px, 2vw, 18px);

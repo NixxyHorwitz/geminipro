@@ -13,14 +13,18 @@ Options -Indexes
 # Block access to src/ and bot/ directories directly
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /googlepro/
+    RewriteBase /
 
     # Block direct access to internal dirs
     RewriteRule ^(src|bot|install|uploads/qris_)/ - [F,L]
 
     # Block .php in src/ and bot/ from direct browser access
-    RewriteCond %{REQUEST_URI} ^/googlepro/(src|bot|install)/
+    RewriteCond %{REQUEST_URI} ^/(src|bot|install)/
     RewriteRule ^ - [F,L]
+
+    # Clean URL routing
+    RewriteRule ^plan/?$ /plan.php [L]
+    RewriteRule ^checkout/?$ /checkout.php [L]
 </IfModule>
 
 # Security headers

@@ -83,8 +83,8 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     Reseller Resmi · Bergaransi
   </div>
   <h1 class="hero__title fade-up fade-up--1">
-    <span class="hero__title-sub">Langganan Resmi</span>
-    <span class="google-text"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC04">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></span> <span class="hero__title-pro">AI Pro</span>
+    Akses Penuh <span class="google-text"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC04">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></span> <span class="hero__title-pro">AI Pro</span><br>
+    <span style="font-weight:400;color:#5f6368;font-size:.72em">untuk Kreativitas Tanpa Batas</span>
   </h1>
   <p class="hero__subtitle fade-up fade-up--2">
     Gemini 3.1 Pro · Deep Research · Veo 3.1 · 5 TB Storage · 1.000 AI Credits/bulan — semua dalam satu paket.

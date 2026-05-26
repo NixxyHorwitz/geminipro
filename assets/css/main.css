@@ -3,7 +3,7 @@
    Dark Premium Theme · Glassmorphism · Fully Responsive
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ── DESIGN TOKENS ────────────────────────────────────────── */
 :root {
@@ -37,13 +37,16 @@
   --shadow-glow:  0 0 40px rgba(79,142,247,.18);
 
   --transition:   .2s ease;
+
+  --font-display: 'Google Sans Display', 'Google Sans', 'Inter', sans-serif;
+  --font-main:    'Google Sans', 'Inter', system-ui, sans-serif;
 }
 
 /* ── RESET ────────────────────────────────────────────────── */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-main, 'Inter', sans-serif);
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
@@ -178,20 +181,25 @@ body > * { position: relative; z-index: 1; }
   letter-spacing: .02em;
 }
 .hero__title {
-  font-size: clamp(48px, 8vw, 88px);
-  font-weight: 900;
-  line-height: 1.0;
-  letter-spacing: -.04em;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -.02em;
   margin-bottom: 24px;
-  color: #0f172a;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  color: #202124;
+  display: block;
+}
+.hero__title .google-text {
+  -webkit-text-fill-color: initial;
+}
+.hero__title .google-text span {
+  -webkit-text-fill-color: initial;
 }
 .hero__title-sub {
-  display: block;
-  font-size: clamp(13px, 1.5vw, 16px);
+  display: inline-block;
+  font-family: var(--font-main);
+  font-size: clamp(12px, 1.2vw, 14px);
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -200,22 +208,12 @@ body > * { position: relative; z-index: 1; }
   border: 1px solid rgba(59,130,246,.18);
   padding: 4px 14px;
   border-radius: 100px;
-  margin-bottom: 8px;
-  -webkit-text-fill-color: initial;
-}
-.hero__title .google-text {
-  font-size: clamp(52px, 9vw, 96px);
-  line-height: 1;
-  letter-spacing: -.04em;
-  -webkit-text-fill-color: initial;
-}
-.hero__title .google-text span {
+  margin-bottom: 16px;
   -webkit-text-fill-color: initial;
 }
 .hero__title-pro {
-  color: #1a1a2e;
-  -webkit-text-fill-color: #1a1a2e;
-  font-weight: 900;
+  color: #202124;
+  -webkit-text-fill-color: #202124;
 }
 .hero__subtitle {
   font-size: clamp(15px, 2vw, 18px);

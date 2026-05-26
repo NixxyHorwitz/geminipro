@@ -428,7 +428,9 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
     <div class="checkout-summary__title">Ringkasan Order</div>
 
     <div class="order-product">
-      <div class="order-product__icon">🤖</div>
+      <div class="order-product__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C10.84 7.47 7.47 10.84 2 12c5.47 1.16 8.84 4.53 10 10 1.16-5.47 4.53-8.84 10-10C16.53 10.84 13.16 7.47 12 2z"/></svg>
+      </div>
       <div>
         <div class="order-product__name">Google AI Pro</div>
         <div class="order-product__dur">Paket 12 Bulan</div>

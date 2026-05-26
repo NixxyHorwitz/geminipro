@@ -14,13 +14,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'save_site') {
         $siteUrl = rtrim(trim($_POST['site_url'] ?? ''), '/');
+        $loadingScreen = isset($_POST['landing_loading_screen']) ? '1' : '0';
+
         if (empty($siteUrl)) {
             $flash = 'URL site tidak boleh kosong.';
             $flashType = 'error';
         } else {
             Config::set($pdo, 'site_url', $siteUrl);
+            Config::set($pdo, 'landing_loading_screen', $loadingScreen);
             Config::writeEnv(['APP_URL' => $siteUrl]);
-            $flash = 'URL Site berhasil disimpan!';
+            $flash = 'Pengaturan Website berhasil disimpan!';
         }
     }
 
@@ -42,8 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 Config::loadFromDb($pdo);
 
 $settings = [
-    'site_url'         => Config::get('site_url', ''),
-    'telegram_contact' => Config::get('telegram_contact', ''),
+    'site_url'               => Config::get('site_url', ''),
+    'telegram_contact'       => Config::get('telegram_contact', ''),
+    'landing_loading_screen' => Config::get('landing_loading_screen', '1'),
 ];
 
 $pageTitle  = 'Settings';
@@ -79,7 +83,18 @@ require __DIR__ . '/partials/header.php';
           <input type="url" name="site_url" class="form-control" value="<?= htmlspecialchars($settings['site_url']) ?>" placeholder="https://yourdomain.com">
           <div class="form-hint">URL publik website tempat checkout berjalan</div>
         </div>
-        <button type="submit" class="btn btn--primary">Simpan URL</button>
+        
+        <div class="form-group" style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border)">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
+            <input type="checkbox" name="landing_loading_screen" value="1" <?= $settings['landing_loading_screen'] == '1' ? 'checked' : '' ?>>
+            <strong>Gunakan Animasi Loading di Domain Utama</strong>
+          </label>
+          <div class="form-hint" style="margin-left:26px">
+            Jika dicentang, pengunjung di index (/) akan melihat loading screen 1.5 detik lalu dialihkan ke /plan (menghindari deteksi bot URL shortener s.id). Jika tidak dicentang, akan langsung dialihkan (Direct PHP Redirect).
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--primary" style="margin-top:12px">Simpan Pengaturan</button>
       </form>
 
       <div class="divider" style="margin:24px 0"></div>

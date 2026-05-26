@@ -1,5 +1,15 @@
 <?php
 // Simple redirect page to avoid URL shortener flags on the main domain
+require_once __DIR__ . '/bootstrap.php';
+use App\Config;
+
+$useLoadingScreen = Config::get('landing_loading_screen', '1');
+
+if ($useLoadingScreen == '0') {
+    // Direct PHP redirect
+    header("Location: /plan");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

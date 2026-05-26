@@ -357,12 +357,12 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
         <li><span class="step-num">2</span>Pilih &ldquo;Scan QR&rdquo; atau &ldquo;Pay&rdquo;</li>
         <li><span class="step-num">3</span>Scan QR Code di atas</li>
         <li><span class="step-num">4</span>Pastikan nominal sesuai, lalu konfirmasi pembayaran</li>
-        <li><span class="step-num">5</span>Tunggu konfirmasi dari admin (biasanya 1&ndash;5 menit)</li>
+        <li><span class="step-num">5</span>Sistem mendeteksi pembayaran otomatis (biasanya 10&ndash;30 detik)</li>
       </ul>
 
       <div class="alert alert--warn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;margin-top:1px"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-        Jika sudah bayar namun belum dikonfirmasi dalam 15 menit, hubungi admin via Threads dengan kode order dan bukti pembayaran Anda.
+        Pembayaran diproses otomatis 24/7. Jika status belum berubah 1 menit setelah bayar, hubungi admin via Threads dengan menyertakan kode order.
       </div>
 
       <div class="order-code-box">
@@ -371,7 +371,7 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
       </div>
 
       <div style="margin-top:24px">
-        <button onclick="checkStatus()" class="btn btn--outline btn--full" id="btn-check">
+        <button onclick="checkStatus()" class="btn btn--outline btn--full btn--lg" id="btn-check">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
           Cek Status Pembayaran
         </button>

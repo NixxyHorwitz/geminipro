@@ -182,7 +182,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
     // Claude: organic diamond/crystal shape (Anthropic brand style)
     $svgClaude = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L8.5 8.5 2 12l6.5 3.5L12 22l3.5-6.5L22 12l-6.5-3.5L12 2zm0 3.8l2.4 4.5 4.8 2.7-4.8 2.7L12 20.2l-2.4-4.5L4.8 13l4.8-2.7L12 5.8z"/></svg>';
 
-    // Claude Vertex / Cloud AI: hexagon network node
+    // Claude Antigravity / Cloud AI: hexagon network node
     $svgCloudAI = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>';
 
     // Claude Workspace: chat bubble with sparkle
@@ -204,7 +204,7 @@ $priceStr = 'Rp ' . number_format($price, 0, ',', '.');
       // Claude benefits
       [$svgClaude,     'Claude Sonnet & Opus', 'Akses model Claude terbaru dari Anthropic — penalaran kompleks, coding canggih, dan analisis dokumen mendalam.','#f3f0ff','#7c3aed'],
       [$svgClaudeChat, 'Claude di Workspace',  'Claude terintegrasi langsung di Google Docs, Gmail, dan Sheets — bantu menulis, edit, dan merangkum konten dengan presisi tinggi.','#ede9fe','#6d28d9'],
-      [$svgCloudAI,    'Claude via Vertex AI', 'Jalankan Claude Haiku, Sonnet, dan Opus melalui Google Cloud Vertex AI — skalabel, aman, dan enterprise-grade.','#f5f3ff','#5b21b6'],
+      [$svgCloudAI,    'Claude via Antigravity', 'Jalankan Claude Haiku, Sonnet, dan Opus melalui Antigravity — skalabel, aman, dan enterprise-grade.','#f5f3ff','#5b21b6'],
     ];
     foreach ($features as [$icon, $title, $desc, $bg, $color]):
     ?>

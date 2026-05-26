@@ -769,7 +769,17 @@ details[open] .faq-icon { transform: rotate(45deg); }
 }
 @media (max-width: 480px) {
   .steps-grid { grid-template-columns: 1fr; }
-  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: 1fr; }
   .btn--lg { padding: 13px 20px; font-size: 14px; }
   h2 { font-size: 26px; }
+
+  /* Minimalist Pricing Card on Mobile */
+  .pricing-card { border-radius: 16px; }
+  .pricing-card__header { padding: 32px 16px 20px; }
+  .pricing-card__body { padding: 20px 16px 24px; }
+  .pricing-card__name { font-size: 24px; }
+  .pricing-card__amount { font-size: 34px; }
+  .pricing-card__tagline { font-size: 13px; margin-bottom: 16px; }
+  .feature-list li { font-size: 13px; padding: 4px 0; }
+  .feature-list li::before { width: 16px; height: 16px; margin-top: 1px; background-size: 10px; }
 }

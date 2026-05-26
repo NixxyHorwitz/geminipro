@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
             $flash = 'Upload gagal atau tidak ada file.'; $flashType = 'error';
         } else {
-            $mime = mime_content_type($file['tmp_name']);
+            $mime = function_exists('mime_content_type') ? mime_content_type($file['tmp_name']) : $file['type'];
             $allowedMimes = ['image/png', 'image/jpeg', 'image/gif', 'image/x-icon', 'image/vnd.microsoft.icon', 'image/webp', 'image/svg+xml'];
             if (!in_array($mime, $allowedMimes)) {
                 $flash = 'Format tidak didukung. Gunakan PNG, ICO, JPG, SVG, atau WebP.'; $flashType = 'error';

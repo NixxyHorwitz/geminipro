@@ -250,8 +250,8 @@ $feeAmountStr = 'Rp ' . number_format($feeAmount, 0, ',', '.');
 <link rel="icon" href="/assets/img/<?= htmlspecialchars($favicon) ?>?v=<?= time() ?>">
 <?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="assets/css/main.css">
-<link rel="stylesheet" href="assets/css/checkout.css">
+<link rel="stylesheet" href="assets/css/main.css?v=<?= time() ?>">
+<link rel="stylesheet" href="assets/css/checkout.css?v=<?= time() ?>">
 </head>
 <body class="checkout-page">
 
